@@ -688,6 +688,7 @@ font-size: 12px;
    #feature{
      
       justify-content: center;
+      
    }
    #feature .fe-box {
   
@@ -695,7 +696,18 @@ font-size: 12px;
   
    
 }
-   #product1 {
-      justify-content: center;
-   }
+  
+    #product1 .Pro-container{     
    
+   /* Removed justify-content: space-around to use full width */
+        padding: 10px 0; /* Reduced vertical padding, removed horizontal padding */
+        
+        /* 💡 FIX: Force horizontal scrolling for feature boxes */
+        display: flex;
+        flex-wrap: nowrap;  
+        overflow-x: auto;}
+   #product1 .Pro{     
+   
+   margin:15px;
+   
+}
