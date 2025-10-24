@@ -66,3 +66,80 @@ function showToast(message, type = 'success') {
   document.body.appendChild(note);
   setTimeout(() => note.remove(), 2500);
 }
+
+// =====================
+// Shop page rendering
+// =====================
+(function initShopPage() {
+  document.addEventListener('DOMContentLoaded', async () => {
+    const container = document.querySelector('#product1 .pro-container');
+    if (!container) return; // Not on shop page
+
+    // Helper: UGX formatter
+    const formatUGX = (value) => `UGX.${Number(value || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+
+    // Load products from API; fall back to local admin storage; if all fail, keep existing markup
+    let productsFromApi = [];
+    try {
+      if (typeof api !== 'undefined' && typeof api.getProducts === 'function') {
+        const res = await api.getProducts({ limit: 100 });
+        productsFromApi = Array.isArray(res?.data) ? res.data : [];
+      }
+    } catch (e) {
+      // Silently fall back
+      console.warn('Failed to load products from API. Falling back to local products.');
+    }
+
+    const localAdminProducts = (() => {
+      try { return JSON.parse(localStorage.getItem('adminProducts') || '[]'); }
+      catch { return []; }
+    })();
+
+    // Merge products (API first), then any local ones not present by name
+    const existingNames = new Set(productsFromApi.map(p => (p.name || '').trim().toLowerCase()));
+    const merged = [
+      ...productsFromApi,
+      ...localAdminProducts.filter(p => !existingNames.has((p.name || '').trim().toLowerCase()))
+    ]
+    // Normalize fields we depend on
+    .map(p => ({
+      _id: p._id || `local-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+      name: p.name || 'Product',
+      category: p.category || 'General',
+      price: typeof p.price === 'string' ? parseFloat(String(p.price).replace(/[^\d.-]/g, '')) || 0 : Number(p.price || 0),
+      image: p.image || ''
+    }));
+
+    if (!merged.length) return; // Nothing to render; leave static content
+
+    // Build product cards
+    const cards = merged.map(p => {
+      const imgSrc = p.image || 'img1.png';
+      return `
+        <div class="Pro" data-id="${p._id}" data-name="${p.name.replace(/"/g, '&quot;')}" data-category="${(p.category||'').replace(/"/g, '&quot;')}" data-price="${p.price}" data-image="${imgSrc}">
+          <img src="${imgSrc}" alt="${p.name.replace(/"/g, '&quot;')}">
+          <div class="des">
+            <span>${p.name}</span>
+            <h5>${p.category}</h5>
+            <div class="star">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+            <h4>${formatUGX(p.price)}</h4>
+          </div>
+          <a href="#"><i class="fa-solid fa-cart-shopping cart"></i></a>
+        </div>
+      `;
+    }).join('');
+
+    container.innerHTML = cards;
+
+    // Ensure cart icon badge is accurate after rendering
+    if (typeof updateCartIcon === 'function') {
+      updateCartIcon();
+    }
+  });
+})();
