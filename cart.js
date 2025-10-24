@@ -301,52 +301,55 @@ async function loadProducts() {
 
 // Add click handlers to "Add to Cart" buttons after products are loaded
 document.addEventListener('DOMContentLoaded', async function() {
-    
-    // Load products first
+    // Load products so we have reference data when possible
     await loadProducts();
-    
-    // Find all "Add to Cart" icons/buttons
-    const cartButtons = document.querySelectorAll('.cart'); 
 
-    cartButtons.forEach(button => {
-        button.addEventListener('click', function(event) {
-            event.preventDefault(); // Prevent default link behavior
-            
-            // Find the closest parent product container element
-            const productElement = this.closest('.Pro'); 
-            
-            if (productElement) {
-                // Extract identifier (assuming the <span> holds the unique name used as ID in sample data)
-                const productNameSpan = productElement.querySelector('.des span');
-                const productIDAttempt = productNameSpan ? productNameSpan.textContent.trim() : null;
+    // Event delegation for dynamically rendered products
+    document.body.addEventListener('click', function(event) {
+        const icon = event.target.closest('.cart');
+        if (!icon) return;
+        event.preventDefault();
 
-                // Attempt to find the full product details from the loaded 'products' array
-                // We match based on the name extracted from the span, case-insensitive.
-                const productData = products.find(p => p.name.trim().toLowerCase() === productIDAttempt?.toLowerCase());
-                
-                if (productData) {
-                    // Prepare the product object in the format needed for the cart
-                    const cartProduct = {
-                        id: productData._id, // Use the actual ID from loaded data
-                        name: productData.name,
-                        category: productData.category,
-                        // Format price for display, but ensure it was loaded as a number
-                        price: `UGX.${(productData.price || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`, 
-                        image: productData.image // Use the image path from loaded data
-                    };
-                    addToCart(cartProduct);
-                } else {
-                    console.warn(`Product data not found for item: ${productIDAttempt}. Check if products loaded correctly or if HTML matches data.`);
-                }
-            } else {
-                console.error("Could not find parent '.Pro' element for the clicked cart button.");
+        // Use data attributes if present (preferred for dynamically rendered products)
+        const productElement = icon.closest('.Pro');
+        if (productElement) {
+            const dataId = productElement.getAttribute('data-id');
+            const dataName = productElement.getAttribute('data-name');
+            const dataCategory = productElement.getAttribute('data-category');
+            const dataPrice = parseFloat(productElement.getAttribute('data-price') || '0');
+            const dataImage = productElement.getAttribute('data-image');
+
+            if (dataId && dataName) {
+                const cartProduct = {
+                    id: dataId,
+                    name: dataName,
+                    category: dataCategory || '',
+                    price: `UGX.${(dataPrice || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
+                    image: dataImage || ''
+                };
+                addToCart(cartProduct);
+                return;
             }
-        });
+        }
+
+        // Fallback: try to match by name from statically coded products
+        const nameSpan = icon.closest('.Pro')?.querySelector('.des span');
+        const nameGuess = nameSpan ? nameSpan.textContent.trim() : null;
+        const productData = nameGuess ? products.find(p => p.name.trim().toLowerCase() === nameGuess.toLowerCase()) : null;
+        if (productData) {
+            const cartProduct = {
+                id: productData._id,
+                name: productData.name,
+                category: productData.category,
+                price: `UGX.${(productData.price || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
+                image: productData.image
+            };
+            addToCart(cartProduct);
+        }
     });
 
     // Initial cart display update (for cart page) and icon update (for navbar)
-    // Run these AFTER attaching handlers
-    updateCartDisplay(); 
-    updateCartIcon(); 
+    updateCartDisplay();
+    updateCartIcon();
 });
 
