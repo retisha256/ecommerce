@@ -48,7 +48,7 @@ p {
 .section-p1 {
    padding: 40px 80px;
 }
-.section-m1 {
+.shop page {
    margin: 40px 0;
 }
 body {
@@ -923,6 +923,7 @@ body {
   margin-bottom: 12px;
   transition: transform 0.3s ease;}
 
+
 /* Newsletter Section */
 #newsletter {
     display: flex;
@@ -988,6 +989,50 @@ body {
     box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
 }
 
+
+/* ===== cart RESPONSIVE STYLES ===== */
+@media(max-width:640px){
+    #card table{display:block;white-space: normal;}
+    #cart table thead { display: none;}
+    #cart table tbody { display:block; }
+    #cart table tr{
+      display:block;
+      background:#fff;
+      margin-bottom: 16px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      box-shadow: 0 10px 24px rgba(107, 70, 193, 0.08);
+
+    }
+    #cart table td{
+      display:grid;
+      grid-template-columns: minmax(110px, 40%) 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 0;
+      border:none;
+      border-bottom: 1px dashed #e5e7eb;
+    }
+    #cart table td:last-child{border-bottom: none;}
+    #cart table td::before {content :attr(data-label);
+      font-weight: 700;
+      color: #6B46C1; text-transform: uppercase;font-size: 12px;}
+    #cart table td:nth-child(1)::before {content: "Remove";} 
+    #cart table td:nth-child(2)::before {content: "Image";}
+    #cart table td:nth-child(3)::before {content: "Product";}
+    #cart table td:nth-child(4)::before {content: "Price";} 
+    #cart table td:nth-child(5)::before {content: "Quantity";}
+    #cart table td:nth-child(6)::before {content: "Subtotal";}
+    #card table td:nth-child(2) img{ width: 60px; height:60px; object-fit: cover; border-radius: 8px;}
+    #cart table td:nth-child(5) input { width :80px;}
+
+    #cart { padding: 24px;}
+    #cart-add {justify-content: center; }
+    #cart-add #subtotal { width: 100%; max-width: 520px;}
+    #cart-add #subtotal .normal{width:100% ;}
+
+}
+
 /* ===== AUTHENTICATION STYLES ===== */
 #auth-section {
     min-height: 80vh;
@@ -1004,8 +1049,9 @@ body {
     overflow: hidden;
     width: 100%;
     max-width: 500px;
-    margin: 20px;
-}
+    margin: 20px;letter-spacing: 0.3px;
+
+  }
 
 .auth-tabs {
     display: flex;
