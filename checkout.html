@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Novuna Electronics</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <section id="header"> 
+        <a href="index.html"><img src="img4.png" class="logo" alt="Novuna Electronics"></a>
+        <div>
+            <ul id="navbar">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="contactus.html">Contact us</a></li>
+                <li id="lg-cart"><a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a></li>
+                <li><a href="#" id="close"><i class="fa fa-times" aria-hidden="true"></i></a></li>
+            </ul>
+        </div>
+        <div id="mobile">
+            <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a>
+            <i id="bar" class="fas fa-outdent"></i>
+        </div>
+    </section>
+
+    <section id="checkout" class="section-p1">
+        <div class="checkout-container">
+            <div class="checkout-form">
+                <h3>Billing Details</h3>
+                <form id="checkout-form">
+                    <div class="form-group">
+                        <label for="firstName">First Name *</label>
+                        <input type="text" id="firstName" name="firstName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lastName">Last Name *</label>
+                        <input type="text" id="lastName" name="lastName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone *</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="address">Address *</label>
+                        <textarea id="address" name="address" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="city">City *</label>
+                        <input type="text" id="city" name="city" required>
+                    </div>
+                    
+                    <h3>Payment Method</h3>
+                    
+                    <div class="payment-methods">
+                        <div class="payment-option">
+                            <input type="radio" id="mtn" name="payment" value="mtn" checked>
+                            <label for="mtn">
+                                <img src="mtn" alt="MTN Mobile Money" class="payment-icon">
+                                MTN Mobile Money
+                            </label>
+                        </div>
+                        
+                        <div class="payment-option">
+                            <input type="radio" id="airtel" name="payment" value="airtel">
+                            <label for="airtel">
+                                <img src="airtel.jpeg" alt="Airtel Money" class="payment-icon">
+                                Airtel Money
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="normal">Place Order</button>
+                </form>
+            </div>
+            
+            <div class="order-summary">
+                <h3>Your Order</h3>
+                <div id="order-items">
+                    <!-- Order items will be displayed here -->
+                </div>
+                <div class="order-totals">
+                    <div class="total-row">
+                        <span>Subtotal:</span>
+                        <span id="order-subtotal">UGX.0</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Shipping:</span>
+                        <span>Free</span>
+                    </div>
+                    <div class="total-row total">
+                        <span>Total:</span>
+                        <span id="order-total">UGX.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="api.js"></script>
+    <script src="script.js"></script>
+    <script src="checkout.js"></script>
+</body>
+</html>
