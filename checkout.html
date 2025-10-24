@@ -29,39 +29,53 @@
         <div class="checkout-container">
             <div class="checkout-form">
                 <h3>Billing Details</h3>
-                <form id="checkout-form">
-                    <div class="form-group">
-                        <label for="firstName">First Name *</label>
-                        <input type="text" id="firstName" name="firstName" required>
+                <form id="checkout-form" novalidate>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="firstName">First Name *</label>
+                            <input type="text" id="firstName" name="firstName" autocomplete="given-name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lastName">Last Name *</label>
+                            <input type="text" id="lastName" name="lastName" autocomplete="family-name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email *</label>
+                            <input type="email" id="email" name="email" autocomplete="email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone *</label>
+                            <input type="tel" id="phone" name="phone" inputmode="tel" placeholder="e.g. 07XXXXXXXX" required>
+                        </div>
+
+                        <div class="form-group full">
+                            <label for="address">Address *</label>
+                            <textarea id="address" name="address" rows="3" placeholder="Street, building, and any delivery details" required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="city">City *</label>
+                            <input type="text" id="city" name="city" autocomplete="address-level2" required>
+                        </div>
+
+                        <div class="form-group full">
+                            <label for="notes">Order Notes (Optional)</label>
+                            <textarea id="notes" name="notes" rows="3" placeholder="Notes about your order, e.g. delivery instructions"></textarea>
+                        </div>
+
+                        <div class="form-group full terms">
+                            <label class="checkbox-container" for="agree">
+                                <input type="checkbox" id="agree" name="agree" required>
+                                I agree to the <a href="#" class="terms-link">Terms & Conditions</a>
+                            </label>
+                        </div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="lastName">Last Name *</label>
-                        <input type="text" id="lastName" name="lastName" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="email">Email *</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="phone">Phone *</label>
-                        <input type="tel" id="phone" name="phone" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="address">Address *</label>
-                        <textarea id="address" name="address" rows="3" required></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="city">City *</label>
-                        <input type="text" id="city" name="city" required>
-                    </div>
-                    
+
                     <h3>Payment Method</h3>
-                    
+
                     <div class="payment-methods">
                         <div class="payment-option">
                             <input type="radio" id="mtn" name="payment" value="mtn" checked>
@@ -70,7 +84,7 @@
                                 MTN Mobile Money
                             </label>
                         </div>
-                        
+
                         <div class="payment-option">
                             <input type="radio" id="airtel" name="payment" value="airtel">
                             <label for="airtel">
@@ -79,7 +93,7 @@
                             </label>
                         </div>
                     </div>
-                    
+
                     <button type="submit" class="normal">Place Order</button>
                 </form>
             </div>
