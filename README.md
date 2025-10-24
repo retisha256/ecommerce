@@ -99,7 +99,7 @@ A complete ecommerce website with mobile money integration for electronics sales
 
 ## WhatsApp Integration
 
-- Support Number: +2567745030391
+- Support Number: +256754030391
 - Direct chat support for customers
 - Payment confirmation via WhatsApp
 - Order updates and notifications
@@ -173,7 +173,7 @@ ecommerce/
 ## Support
 
 For support and questions:
-- WhatsApp: +2567745030391
+- WhatsApp: +256754030391
 - Email: Customerservice.Novuna@gmail.com
 
 ## License
