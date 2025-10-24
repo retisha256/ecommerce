@@ -26,6 +26,7 @@
   </section>
 
   <section id="checkout" class="section-p1">
+    <div id="admin-gate" style="display:none"></div>
     <div class="checkout-container">
       <div class="checkout-form">
         <h3>Add New Product</h3>
@@ -66,5 +67,49 @@
   <script src="api.js"></script>
   <script src="script.js"></script>
   <script src="admin.js"></script>
+  <script>
+    (function() {
+      const GATE_KEY = 'adminAccess';
+      const PASS_KEY = 'adminPassHash';
+      const DEFAULT_PASS = 'novuna123';
+      function hash(s){
+        let h=0; for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i); h|=0;} return String(h);
+      }
+      const stored = localStorage.getItem(GATE_KEY);
+      if (stored === 'granted') {
+        document.getElementById('admin-gate').style.display = 'none';
+        return;
+      }
+      const container = document.querySelector('.checkout-container');
+      const gate = document.getElementById('admin-gate');
+      gate.style.display = 'block';
+      gate.innerHTML = `
+        <div class="checkout-container" style="max-width:520px;margin:40px auto;">
+          <div class="checkout-form">
+            <h3>Admin Access</h3>
+            <div class="form-group">
+              <label for="admin-password">Enter password</label>
+              <input type="password" id="admin-password" placeholder="Password" />
+            </div>
+            <button id="admin-enter" class="normal">Enter</button>
+            <p id="admin-error" style="color:#DC2626;display:none;margin-top:10px;">Incorrect password</p>
+          </div>
+        </div>`;
+      container.style.display = 'none';
+      document.getElementById('admin-enter').addEventListener('click', function(e){
+        e.preventDefault();
+        const input = document.getElementById('admin-password').value;
+        const expected = localStorage.getItem(PASS_KEY) || hash(DEFAULT_PASS);
+        if (hash(input) === expected) {
+          localStorage.setItem(GATE_KEY, 'granted');
+          gate.remove();
+          container.style.display = '';
+        } else {
+          const err = document.getElementById('admin-error');
+          err.style.display = 'block';
+        }
+      });
+    })();
+  </script>
 </body>
 </html>

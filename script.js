@@ -51,6 +51,25 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
   }
+  // Ensure Admin link exists in navbar across pages
+  try {
+    const navbarEl = document.getElementById('navbar');
+    if (navbarEl && !navbarEl.querySelector('a[href="admin.html"]')) {
+      const adminLi = document.createElement('li');
+      const adminA = document.createElement('a');
+      adminA.href = 'admin.html';
+      adminA.textContent = 'Admin';
+      adminLi.appendChild(adminA);
+      const insertBeforeEl = navbarEl.querySelector('#lg-cart') || navbarEl.querySelector('#close');
+      if (insertBeforeEl && insertBeforeEl.parentElement === navbarEl) {
+        navbarEl.insertBefore(adminLi, insertBeforeEl);
+      } else {
+        navbarEl.appendChild(adminLi);
+      }
+    }
+  } catch (err) {
+    console.error('Failed to inject Admin link', err);
+  }
 });
 
 function showToast(message, type = 'success') {
