@@ -14,8 +14,15 @@ function addToCart(product) {
     if (existingItem) {
         existingItem.quantity += 1;
     } else {
+        // Ensure price is stored correctly when adding
+        const priceNumber = typeof product.price === 'string' 
+                            ? parseFloat(product.price.replace(/[^\d.-]/g, '')) || 0 
+                            : (typeof product.price === 'number' ? product.price : 0);
+
         cart.push({
             ...product,
+            price: `UGX.${priceNumber.toLocaleString()}`, // Store with formatting
+            _priceValue: priceNumber, // Store raw number value
             quantity: 1
         });
     }
@@ -49,6 +56,7 @@ function updateQuantity(productId, change) {
     }
 }
 
+// *** UPDATED FUNCTION ***
 // Update cart display on the dedicated cart page (cart.html)
 function updateCartDisplay() {
     const cartItemsContainer = document.getElementById('cart-items');
@@ -75,11 +83,23 @@ function updateCartDisplay() {
     
     let total = 0;
     cartItemsContainer.innerHTML = cart.map(item => {
-        // Ensure price is treated as a number, removing currency/commas
-        const priceNumber = parseFloat(String(item.price).replace(/[^\d.-]/g, '')) || 0;
+        
+        // --- START FIX: Robust Price Parsing ---
+        let priceString = String(item.price || '0'); 
+        // 1. Remove "UGX." prefix (case-insensitive, optional space/dot)
+        priceString = priceString.replace(/ugx\.?\s?/i, ''); 
+        // 2. Remove commas (thousands separators)
+        priceString = priceString.replace(/,/g, ''); 
+        // 3. Parse the remaining string as a float
+        const priceNumber = parseFloat(priceString) || 0; // Default to 0 if parsing fails
+        // --- END FIX ---
+
         const itemTotal = priceNumber * item.quantity;
         total += itemTotal;
         
+        // Use the original formatted price for display, calculated price for subtotal
+        const displayPrice = item.price || `UGX.${priceNumber.toLocaleString()}`; 
+
         return `
             <tr>
                 <td><a href="#" onclick="event.preventDefault(); removeFromCart('${item.id}')"><i class="far fa-times-circle"></i></a></td>
@@ -88,13 +108,13 @@ function updateCartDisplay() {
                     <h5>${item.name}</h5>
                     <small>${item.category || ''}</small> 
                 </td>
-                <td>${item.price}</td>
+                <td>${displayPrice}</td> 
                 <td>
                     <input type="number" value="${item.quantity}" min="1" 
                            style="width: 60px; text-align: center;"
                            onchange="updateQuantityFromInput('${item.id}', this.value)">
                 </td>
-                <td>UGX.${itemTotal.toLocaleString()}</td>
+                <td>UGX.${itemTotal.toLocaleString()}</td> 
             </tr>
         `;
     }).join('');
@@ -104,13 +124,14 @@ function updateCartDisplay() {
     if (cartTotal) cartTotal.textContent = `UGX.${total.toLocaleString()}`;
 }
 
+
 // Update quantity specifically from the input field on the cart page
 function updateQuantityFromInput(productId, newQuantity) {
     const quantity = parseInt(newQuantity);
     
     // Validate quantity is a positive number
     if (isNaN(quantity) || quantity <= 0) {
-        // If invalid, consider removing or reverting, here we remove
+        // If invalid, remove the item
         removeFromCart(productId);
         return; 
     }
@@ -125,7 +146,6 @@ function updateQuantityFromInput(productId, newQuantity) {
 }
 
 
-// *** UPDATED FUNCTION ***
 // Update ONLY the cart icons in the main navigation bar (#navbar and #mobile)
 function updateCartIcon() {
     // Select only the cart icons within the main navigation areas
@@ -166,6 +186,7 @@ function updateCartIcon() {
                 line-height: 1;
                 min-width: 18px; /* Ensure circle shape for single digit */
                 text-align: center;
+                z-index: 1; /* Ensure badge is above icon */
             `;
             
             badgeContainer.appendChild(badge);
@@ -316,18 +337,6 @@ document.addEventListener('DOMContentLoaded', async function() {
                     addToCart(cartProduct);
                 } else {
                     console.warn(`Product data not found for item: ${productIDAttempt}. Check if products loaded correctly or if HTML matches data.`);
-                    // Optional: Fallback using data scraped directly from HTML (less reliable)
-                    // const productNameH5 = productElement.querySelector('.des h5')?.textContent || 'Unknown Category';
-                    // const productPriceH4 = productElement.querySelector('.des h4')?.textContent || 'UGX.0';
-                    // const productImageSrc = productElement.querySelector('img')?.src || '';
-                    // const fallbackProduct = {
-                    //     id: productIDAttempt ? productIDAttempt.toLowerCase().replace(/\s+/g, '-') : `fallback-${Date.now()}`,
-                    //     name: productIDAttempt || 'Unknown Product',
-                    //     category: productNameH5,
-                    //     price: productPriceH4,
-                    //     image: productImageSrc.split('/').pop() // Get filename
-                    // };
-                    // addToCart(fallbackProduct);
                 }
             } else {
                 console.error("Could not find parent '.Pro' element for the clicked cart button.");
@@ -336,6 +345,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
 
     // Initial cart display update (for cart page) and icon update (for navbar)
+    // Run these AFTER attaching handlers
     updateCartDisplay(); 
     updateCartIcon(); 
 });
+

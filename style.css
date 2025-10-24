@@ -889,6 +889,39 @@ body {
     color: #F59E0B;
     font-weight: 500;
 }
+#product1 .pro-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    padding: 20px 0;
+    max-width: 1200px;
+     max-width: 0 auto;}
+#product1 .Pro {
+  background: #fff;
+  color:#111;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  border-radius: 16px;   
+  box-sizing: 0 8px 24px rgba(17, 24, 39, 0.08);
+  overflow: hidden;
+  position:relative;  
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  display:flex;
+  flex-direction:column;
+  text-align: center;
+  padding: 16px;
+}
+#product1 .Pro:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(17, 24, 39, 0.14);
+  border-color: rgba(107, 70,193,0.35);
+}
+#product1 .Pro img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  transition: transform 0.3s ease;}
 
 /* Newsletter Section */
 #newsletter {
