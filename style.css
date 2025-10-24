@@ -57,6 +57,43 @@ body {
    color: #fff;
 }
 
+/* ===== Shared Button Style ===== */
+.normal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #6B46C1, #F59E0B);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 28px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(107, 70, 193, 0.3);
+  text-decoration: none;
+}
+
+.normal:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(107, 70, 193, 0.45);
+  background: linear-gradient(135deg, #8B5CF6, #F59E0B);
+}
+
+.normal:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 18px rgba(107, 70, 193, 0.35);
+}
+
+.normal:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 /* Header */
 #header {
    display: flex;
@@ -554,6 +591,71 @@ body {
     height: fit-content;
     box-shadow: 0 15px 40px rgba(107, 70, 193, 0.1);
     border: 1px solid rgba(107, 70, 193, 0.1);
+}
+
+/* Checkout layout enhancements */
+.checkout-container {
+    align-items: flex-start;
+}
+
+.checkout-form .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.checkout-form .form-grid .full {
+    grid-column: 1 / -1;
+}
+
+.checkout-form .form-grid .terms {
+    margin-top: 6px;
+}
+
+.checkout-form .error-text {
+    color: #DC2626; /* red-600 */
+    font-size: 12px;
+    margin-top: 6px;
+    display: block;
+}
+
+.checkout-form input:invalid,
+.checkout-form textarea:invalid {
+    border-color: #DC2626;
+}
+
+/* Sticky order summary on desktop */
+@media (min-width: 992px) {
+  .order-summary {
+    position: sticky;
+    top: 100px;
+  }
+}
+
+/* Checkout grid collapses on tablets/phones */
+@media (max-width: 991px) {
+  .checkout-container {
+    flex-direction: column;
+    gap: 24px;
+  }
+  .checkout-form .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .order-summary {
+    width: 100%;
+  }
+}
+
+/* Checkout small screens */
+@media (max-width: 767px) {
+  #checkout {
+    padding: 30px 20px;
+  }
+  .checkout-form,
+  .order-summary {
+    padding: 24px;
+    border-radius: 16px;
+  }
 }
 
 .order-summary h3 {
@@ -2133,3 +2235,177 @@ font-size: 12px;
     padding: 20px;
   }
 }   
+
+/* ===== SHOP PRODUCT CARDS (shop.html - #product1) ===== */
+#product1 .pro-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+#product1 .Pro {
+  background: #fff;
+  color: #111;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  padding: 16px;
+}
+
+#product1 .Pro:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(17, 24, 39, 0.14);
+  border-color: rgba(107, 70, 193, 0.35); /* purple accent */
+}
+
+#product1 .Pro img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  transition: transform 0.3s ease;
+}
+
+#product1 .Pro:hover img {
+  transform: scale(1.03);
+}
+
+#product1 .Pro .des {
+  padding: 6px 0 44px; /* room for floating cart */
+}
+
+#product1 .Pro .des span {
+  color: #64748b; /* slate-500 */
+  font-size: 12.5px;
+}
+
+#product1 .Pro .des h5 {
+  margin: 6px 0;
+  color: #111;
+  font-size: 14.5px;
+  font-weight: 600;
+}
+
+#product1 .Pro .des .star i {
+  font-size: 12px;
+  color: #F59E0B; /* yellow for stars */
+}
+
+#product1 .Pro .des h4 {
+  margin-top: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #6B46C1; /* purple price */
+}
+
+#product1 .Pro .cart {
+  width: 46px;
+  height: 46px;
+  line-height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #F59E0B, #FCD34D);
+  color: #111;
+  border: 2px solid #fff;
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease, color 0.3s ease;
+}
+
+#product1 .Pro .cart:hover {
+  transform: scale(1.08);
+  background: linear-gradient(135deg, #6B46C1, #8B5CF6);
+  color: #fff;
+  box-shadow: 0 8px 22px rgba(107, 70, 193, 0.4);
+}
+
+/* ===== CART RESPONSIVE REFLOW ===== */
+@media (max-width: 640px) {
+  /* Convert table to card list */
+  #cart table {
+    display: block;
+    white-space: normal;
+  }
+  #cart table thead {
+    display: none;
+  }
+  #cart table tbody {
+    display: block;
+  }
+  #cart table tr {
+    display: block;
+    background: #fff;
+    margin-bottom: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 10px 24px rgba(107, 70, 193, 0.08);
+  }
+  #cart table td {
+    display: grid;
+    grid-template-columns: minmax(110px, 40%) 1fr;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px dashed #e5e7eb;
+  }
+  #cart table td:last-child {
+    border-bottom: none;
+  }
+  /* Labels using pseudo-elements; data-label takes priority if present */
+  #cart table td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: #6B46C1;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+  }
+  #cart table td:nth-child(1)::before { content: 'Remove'; }
+  #cart table td:nth-child(2)::before { content: 'Image'; }
+  #cart table td:nth-child(3)::before { content: 'Product'; }
+  #cart table td:nth-child(4)::before { content: 'Price'; }
+  #cart table td:nth-child(5)::before { content: 'Quantity'; }
+  #cart table td:nth-child(6)::before { content: 'Subtotal'; }
+
+  #cart table td:nth-child(2) img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  #cart table td:nth-child(5) input {
+    width: 80px;
+  }
+
+  /* Container padding */
+  #cart {
+    padding: 24px;
+  }
+
+  /* Totals section */
+  #cart-add {
+    justify-content: center;
+  }
+  #cart-add #subtotal {
+    width: 100%;
+    max-width: 520px;
+  }
+  #cart-add #subtotal .normal {
+    width: 100%;
+  }
+}

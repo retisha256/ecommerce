@@ -51,6 +51,11 @@ function setupCheckoutForm() {
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
+        // Client-side validation
+        if (!validateCheckoutForm(form)) {
+            return;
+        }
+        
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
         if (cart.length === 0) {
             alert('Your cart is empty!');
@@ -66,7 +71,8 @@ function setupCheckoutForm() {
                 email: formData.get('email'),
                 phone: formData.get('phone'),
                 address: formData.get('address'),
-                city: formData.get('city')
+                city: formData.get('city'),
+                notes: formData.get('notes') || ''
             },
             payment: formData.get('payment'),
             items: cart,
@@ -77,6 +83,66 @@ function setupCheckoutForm() {
         // Process order
         processOrder(orderData);
     });
+}
+
+// Simple inline validation helpers
+function validateCheckoutForm(form) {
+    clearFormErrors(form);
+    let isValid = true;
+
+    const firstName = form.querySelector('#firstName');
+    const lastName = form.querySelector('#lastName');
+    const email = form.querySelector('#email');
+    const phone = form.querySelector('#phone');
+    const address = form.querySelector('#address');
+    const city = form.querySelector('#city');
+    const agree = form.querySelector('#agree');
+
+    if (!firstName.value.trim()) {
+        showFieldError(firstName, 'First name is required');
+        isValid = false;
+    }
+    if (!lastName.value.trim()) {
+        showFieldError(lastName, 'Last name is required');
+        isValid = false;
+    }
+    if (!email.value.trim() || !/^\S+@\S+\.[\w-]{2,}$/.test(email.value)) {
+        showFieldError(email, 'Enter a valid email address');
+        isValid = false;
+    }
+    // Allow numbers, spaces, + and leading zeros; ensure 9-12 digits total
+    const digits = phone.value.replace(/\D/g, '');
+    if (digits.length < 9 || digits.length > 12) {
+        showFieldError(phone, 'Enter a valid phone number');
+        isValid = false;
+    }
+    if (!address.value.trim()) {
+        showFieldError(address, 'Address is required');
+        isValid = false;
+    }
+    if (!city.value.trim()) {
+        showFieldError(city, 'City is required');
+        isValid = false;
+    }
+    if (!agree.checked) {
+        showFieldError(agree, 'You must agree to the Terms');
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+function showFieldError(inputEl, message) {
+    const group = inputEl.closest('.form-group') || inputEl.parentElement;
+    if (!group) return;
+    const small = document.createElement('small');
+    small.className = 'error-text';
+    small.textContent = message;
+    group.appendChild(small);
+}
+
+function clearFormErrors(form) {
+    form.querySelectorAll('.error-text').forEach(el => el.remove());
 }
 
 // Calculate total
