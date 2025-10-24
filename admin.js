@@ -8,28 +8,28 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
 
     const formData = new FormData(form);
-    const product = {
-      name: formData.get('name').trim(),
-      category: formData.get('category').trim(),
-      price: Number(formData.get('price')),
-      image: formData.get('image').trim(),
-      description: (formData.get('description') || '').trim()
-    };
+    const name = (formData.get('name') || '').toString().trim();
+    const category = (formData.get('category') || '').toString().trim();
+    const price = Number(formData.get('price'));
+    const description = (formData.get('description') || '').toString().trim();
+    const imageFile = formData.get('image');
 
-    if (!product.name || !product.category || !product.price || !product.image) {
+    if (!name || !category || !price || !imageFile || (imageFile && imageFile.size === 0)) {
       toast('Please fill in all required fields', 'error');
       return;
     }
 
     try {
       if (typeof api !== 'undefined') {
-        const created = await api.createProduct(product);
+        // Send multipart/form-data to backend (supports file upload)
+        const created = await api.createProduct(formData);
         toast('Product created successfully');
-        appendRecent(created.data || product);
+        appendRecent(created.data || { name, category, price, image: created?.data?.image, description });
       } else {
-        // Fallback to localStorage
+        // Fallback to localStorage with a temporary preview URL for the image
         const local = JSON.parse(localStorage.getItem('adminProducts') || '[]');
-        const localProduct = { ...product, _id: 'local-' + Date.now() };
+        const previewUrl = imageFile && typeof URL !== 'undefined' ? URL.createObjectURL(imageFile) : '';
+        const localProduct = { _id: 'local-' + Date.now(), name, category, price, image: previewUrl, description };
         local.unshift(localProduct);
         localStorage.setItem('adminProducts', JSON.stringify(local));
         toast('Saved locally (API unavailable)');
@@ -38,7 +38,19 @@ document.addEventListener('DOMContentLoaded', () => {
       form.reset();
     } catch (err) {
       console.error(err);
-      toast('Failed to create product', 'error');
+      // As a graceful fallback, save locally so admin doesn't lose data
+      try {
+        const local = JSON.parse(localStorage.getItem('adminProducts') || '[]');
+        const previewUrl = imageFile && typeof URL !== 'undefined' ? URL.createObjectURL(imageFile) : '';
+        const localProduct = { _id: 'local-' + Date.now(), name, category, price, image: previewUrl, description };
+        local.unshift(localProduct);
+        localStorage.setItem('adminProducts', JSON.stringify(local));
+        toast('Saved locally (server unavailable).', 'error');
+        appendRecent(localProduct);
+        form.reset();
+      } catch (e2) {
+        toast('Failed to create product', 'error');
+      }
     }
   });
 
