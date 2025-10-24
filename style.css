@@ -57,6 +57,43 @@ body {
    color: #fff;
 }
 
+/* ===== Shared Button Style ===== */
+.normal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #6B46C1, #F59E0B);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 28px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(107, 70, 193, 0.3);
+  text-decoration: none;
+}
+
+.normal:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(107, 70, 193, 0.45);
+  background: linear-gradient(135deg, #8B5CF6, #F59E0B);
+}
+
+.normal:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 18px rgba(107, 70, 193, 0.35);
+}
+
+.normal:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 /* Header */
 #header {
    display: flex;
@@ -597,8 +634,27 @@ body {
 
 /* Checkout grid collapses on tablets/phones */
 @media (max-width: 991px) {
+  .checkout-container {
+    flex-direction: column;
+    gap: 24px;
+  }
   .checkout-form .form-grid {
     grid-template-columns: 1fr;
+  }
+  .order-summary {
+    width: 100%;
+  }
+}
+
+/* Checkout small screens */
+@media (max-width: 767px) {
+  #checkout {
+    padding: 30px 20px;
+  }
+  .checkout-form,
+  .order-summary {
+    padding: 24px;
+    border-radius: 16px;
   }
 }
 

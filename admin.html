@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Add Products</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+  <section id="header">
+    <a href="index.html"><img src="img4.png" class="logo" alt="Novuna Electronics" /></a>
+    <div>
+      <ul id="navbar">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop</a></li>
+        <li><a href="contactus.html">Contact us</a></li>
+        <li id="lg-cart"><a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a></li>
+        <li><a href="#" id="close"><i class="fa fa-times" aria-hidden="true"></i></a></li>
+      </ul>
+    </div>
+    <div id="mobile">
+      <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a>
+      <i id="bar" class="fas fa-outdent"></i>
+    </div>
+  </section>
+
+  <section id="checkout" class="section-p1">
+    <div class="checkout-container">
+      <div class="checkout-form">
+        <h3>Add New Product</h3>
+        <form id="admin-product-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="name">Name *</label>
+              <input type="text" id="name" name="name" required />
+            </div>
+            <div class="form-group">
+              <label for="category">Category *</label>
+              <input type="text" id="category" name="category" required />
+            </div>
+            <div class="form-group">
+              <label for="price">Price (UGX) *</label>
+              <input type="number" id="price" name="price" min="0" step="1" required />
+            </div>
+            <div class="form-group">
+              <label for="image">Image filename *</label>
+              <input type="text" id="image" name="image" placeholder="e.g. laptop.png" required />
+            </div>
+            <div class="form-group full">
+              <label for="description">Description</label>
+              <textarea id="description" name="description" rows="3" placeholder="Optional short description"></textarea>
+            </div>
+          </div>
+          <button type="submit" class="normal"><i class="fa fa-plus"></i> Add Product</button>
+        </form>
+      </div>
+
+      <div class="order-summary">
+        <h3>Recently Added</h3>
+        <div id="recent-products"></div>
+      </div>
+    </div>
+  </section>
+
+  <script src="api.js"></script>
+  <script src="script.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
