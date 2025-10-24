@@ -84,15 +84,18 @@ function updateCartDisplay() {
     let total = 0;
     cartItemsContainer.innerHTML = cart.map(item => {
         
-        // --- START FIX: Robust Price Parsing ---
-        let priceString = String(item.price || '0'); 
-        // 1. Remove "UGX." prefix (case-insensitive, optional space/dot)
-        priceString = priceString.replace(/ugx\.?\s?/i, ''); 
-        // 2. Remove commas (thousands separators)
-        priceString = priceString.replace(/,/g, ''); 
-        // 3. Parse the remaining string as a float
-        const priceNumber = parseFloat(priceString) || 0; // Default to 0 if parsing fails
-        // --- END FIX ---
+        // Robust Price Parsing (works for numbers or strings like "UGX.1,234")
+        let priceNumber = 0;
+        if (typeof item._priceValue === 'number' && !isNaN(item._priceValue)) {
+            priceNumber = item._priceValue;
+        } else if (typeof item.price === 'number') {
+            priceNumber = item.price;
+        } else {
+            let priceString = String(item.price || '0');
+            priceString = priceString.replace(/ugx\.?\s?/i, '');
+            priceString = priceString.replace(/,/g, '');
+            priceNumber = parseFloat(priceString) || 0;
+        }
 
         const itemTotal = priceNumber * item.quantity;
         total += itemTotal;

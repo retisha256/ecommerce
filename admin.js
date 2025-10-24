@@ -8,28 +8,47 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
 
     const formData = new FormData(form);
+    const name = (formData.get('name') || '').toString().trim();
+    const category = (formData.get('category') || '').toString().trim();
+    const price = Number(formData.get('price'));
+    const description = (formData.get('description') || '').toString().trim();
+    const imageFile = formData.get('image');
+
     const product = {
-      name: formData.get('name').trim(),
-      category: formData.get('category').trim(),
-      price: Number(formData.get('price')),
-      image: formData.get('image').trim(),
-      description: (formData.get('description') || '').trim()
+      name,
+      category,
+      price,
+      image: '',
+      description
     };
 
-    if (!product.name || !product.category || !product.price || !product.image) {
+    if (!product.name || !product.category || !product.price || !imageFile) {
       toast('Please fill in all required fields', 'error');
       return;
     }
 
     try {
-      if (typeof api !== 'undefined') {
+      // If API is available, upload image first then create product with returned URL
+      if (typeof api !== 'undefined' && typeof api.uploadImage === 'function') {
+        let imageUrl = '';
+        try {
+          const uploadRes = await api.uploadImage(imageFile);
+          imageUrl = uploadRes.imageUrl || uploadRes.fullUrl || uploadRes.filename || '';
+        } catch (uploadErr) {
+          console.warn('Upload failed, will fallback to local filename if possible.', uploadErr);
+          // Fallback: create an object URL for preview and store name only
+          imageUrl = imageFile && imageFile.name ? imageFile.name : '';
+        }
+
+        product.image = imageUrl;
         const created = await api.createProduct(product);
         toast('Product created successfully');
         appendRecent(created.data || product);
       } else {
-        // Fallback to localStorage
+        // Fallback to localStorage with base64 image for persistence
         const local = JSON.parse(localStorage.getItem('adminProducts') || '[]');
-        const localProduct = { ...product, _id: 'local-' + Date.now() };
+        const dataUrl = imageFile ? await readFileAsDataURL(imageFile) : '';
+        const localProduct = { ...product, image: dataUrl || (imageFile?.name || ''), _id: 'local-' + Date.now() };
         local.unshift(localProduct);
         localStorage.setItem('adminProducts', JSON.stringify(local));
         toast('Saved locally (API unavailable)');
@@ -37,8 +56,20 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       form.reset();
     } catch (err) {
-      console.error(err);
-      toast('Failed to create product', 'error');
+      console.warn('API create failed, falling back to local save', err);
+      try {
+        const local = JSON.parse(localStorage.getItem('adminProducts') || '[]');
+        const dataUrl = imageFile ? await readFileAsDataURL(imageFile) : '';
+        const localProduct = { ...product, image: dataUrl || (imageFile?.name || ''), _id: 'local-' + Date.now() };
+        local.unshift(localProduct);
+        localStorage.setItem('adminProducts', JSON.stringify(local));
+        toast('Saved locally (server unavailable)');
+        appendRecent(localProduct);
+        form.reset();
+      } catch (fallbackErr) {
+        console.error('Local fallback also failed', fallbackErr);
+        toast('Failed to create product', 'error');
+      }
     }
   });
 
@@ -60,6 +91,20 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="item-quantity">UGX ${Number(p.price).toLocaleString()}</div>
     `;
     recent.prepend(el);
+  }
+
+  // Helper to convert File to data URL for persistence in localStorage
+  function readFileAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+      try {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      } catch (e) {
+        reject(e);
+      }
+    });
   }
 });
 

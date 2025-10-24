@@ -28,6 +28,28 @@ class ApiService {
         }
     }
 
+    // Image upload (multipart/form-data)
+    async uploadImage(file) {
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const url = `${API_BASE_URL}/upload`;
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                body: formData // Let browser set Content-Type with boundary
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || 'Image upload failed');
+            }
+            return data; // expected: { success, filename, imageUrl, fullUrl }
+        } catch (error) {
+            console.error('Image upload error:', error);
+            throw error;
+        }
+    }
+
     // Product methods
     async getProducts(params = {}) {
         const queryString = new URLSearchParams(params).toString();
