@@ -3,6 +3,8 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
+const fs = require('fs');
+const multer = require('multer');
 require('dotenv').config();
 
 const app = express();
@@ -13,6 +15,38 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Multer setup for image uploads
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, uploadsDir);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        const ext = path.extname(file.originalname) || '';
+        cb(null, `image-${uniqueSuffix}${ext}`);
+    }
+});
+
+const upload = multer({
+    storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+    fileFilter: (req, file, cb) => {
+        if (/^image\/(jpeg|png|gif|webp)$/.test(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only image files (jpeg, png, gif, webp) are allowed'));
+        }
+    }
+});
 
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/novuna-electronics';
@@ -47,7 +81,8 @@ const productSchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: true
+        required: false,
+        default: ''
     },
     image: {
         type: String,
@@ -211,10 +246,44 @@ app.get('/api/products/:id', async (req, res) => {
     }
 });
 
-// Create product (Admin only)
-app.post('/api/products', async (req, res) => {
+// Create product (Admin only) - supports JSON and multipart/form-data with image upload
+app.post('/api/products', upload.single('image'), async (req, res) => {
     try {
-        const product = new Product(req.body);
+        const isMultipart = (req.headers['content-type'] || '').includes('multipart/form-data');
+
+        let payload = {};
+        if (isMultipart) {
+            const imageUrl = req.file ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` : (req.body.image || '');
+
+            payload = {
+                name: (req.body.name || '').trim(),
+                category: (req.body.category || '').trim(),
+                price: Number(req.body.price),
+                description: (req.body.description || '').toString(),
+                image: imageUrl,
+                stock: Number(req.body.stock || 0),
+                featured: req.body.featured === 'true' || req.body.featured === true
+            };
+        } else {
+            // JSON body
+            payload = {
+                ...req.body,
+            };
+            // Ensure types
+            payload.name = (payload.name || '').trim();
+            payload.category = (payload.category || '').trim();
+            payload.price = Number(payload.price);
+            payload.description = (payload.description || '').toString();
+            payload.image = (payload.image || '').toString();
+            if (typeof payload.stock !== 'number') payload.stock = Number(payload.stock || 0);
+            if (typeof payload.featured !== 'boolean') payload.featured = payload.featured === 'true';
+        }
+
+        if (!payload.name || !payload.category || !payload.price || !payload.image) {
+            return res.status(400).json({ success: false, message: 'Missing required fields: name, category, price, image' });
+        }
+
+        const product = new Product(payload);
         await product.save();
         res.status(201).json({ success: true, data: product });
     } catch (error) {
@@ -372,9 +441,9 @@ app.post('/api/payments/verify', async (req, res) => {
     }
 });
 
-// Serve static files
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// Serve static files (fallback to index only for browsers hitting root)
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Error handling middleware
