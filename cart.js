@@ -21,7 +21,7 @@ function addToCart(product) {
 
         cart.push({
             ...product,
-            price: `UGX.${priceNumber.toLocaleString()}`, // Store with formatting
+            price: `UGX.${priceNumber.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, // Store with formatting (no decimals)
             _priceValue: priceNumber, // Store raw number value
             quantity: 1
         });
@@ -98,7 +98,7 @@ function updateCartDisplay() {
         total += itemTotal;
         
         // Use the original formatted price for display, calculated price for subtotal
-        const displayPrice = item.price || `UGX.${priceNumber.toLocaleString()}`; 
+        const displayPrice = item.price || `UGX.${priceNumber.toLocaleString(undefined, { maximumFractionDigits: 0 })}`; 
 
         return `
             <tr>
@@ -114,14 +114,14 @@ function updateCartDisplay() {
                            style="width: 60px; text-align: center;"
                            onchange="updateQuantityFromInput('${item.id}', this.value)">
                 </td>
-                <td>UGX.${itemTotal.toLocaleString()}</td> 
+                <td>UGX.${itemTotal.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td> 
             </tr>
         `;
     }).join('');
     
     // Update totals if elements exist
-    if (cartSubtotal) cartSubtotal.textContent = `UGX.${total.toLocaleString()}`;
-    if (cartTotal) cartTotal.textContent = `UGX.${total.toLocaleString()}`;
+    if (cartSubtotal) cartSubtotal.textContent = `UGX.${total.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+    if (cartTotal) cartTotal.textContent = `UGX.${total.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 }
 
 
@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                         name: productData.name,
                         category: productData.category,
                         // Format price for display, but ensure it was loaded as a number
-                        price: `UGX.${(productData.price || 0).toLocaleString()}`, 
+                        price: `UGX.${(productData.price || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`, 
                         image: productData.image // Use the image path from loaded data
                     };
                     addToCart(cartProduct);

@@ -35,13 +35,13 @@ function loadCartToCheckout() {
                     </div>
                 </div>
                 <div class="item-quantity">${item.quantity}</div>
-                <div class="item-price">UGX.${itemTotal.toLocaleString()}</div>
+                <div class="item-price">UGX.${itemTotal.toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
             </div>
         `;
     }).join('');
     
-    orderSubtotal.textContent = `UGX.${total.toLocaleString()}`;
-    orderTotal.textContent = `UGX.${total.toLocaleString()}`;
+    orderSubtotal.textContent = `UGX.${total.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+    orderTotal.textContent = `UGX.${total.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 }
 
 // Setup checkout form submission
@@ -203,7 +203,7 @@ function showMobileMoneyInstructions(paymentData, orderData) {
                     <li>Dial *${paymentData.paymentMethod === 'mtn' ? '165*3' : '*185*9*1'}# on your phone</li>
                     <li>Select "Send Money" or "Pay Bill"</li>
                     <li>Enter merchant number: <strong>${paymentNumber}</strong></li>
-                    <li>Enter amount: <strong>UGX ${paymentData.amount.toLocaleString()}</strong></li>
+                    <li>Enter amount: <strong>UGX ${paymentData.amount.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong></li>
                     <li>Enter reference: <strong>${paymentData.orderId}</strong></li>
                     <li>Enter your PIN to complete payment</li>
                 </ol>
@@ -211,7 +211,7 @@ function showMobileMoneyInstructions(paymentData, orderData) {
                 <div class="payment-alternative">
                     <h4>Alternative Payment Method:</h4>
                     <p>You can also pay directly via WhatsApp:</p>
-                    <a href="https://wa.me/${paymentNumber}?text=Hi, I want to pay for Order ${paymentData.orderId} - UGX ${paymentData.amount.toLocaleString()}" 
+                    <a href="https://wa.me/${paymentNumber}?text=Hi, I want to pay for Order ${paymentData.orderId} - UGX ${paymentData.amount.toLocaleString(undefined, { maximumFractionDigits: 0 })}" 
                        class="whatsapp-pay-btn" target="_blank">
                         <i class="fab fa-whatsapp"></i> Pay via WhatsApp
                     </a>
@@ -296,7 +296,7 @@ function showOrderSuccess(orderData) {
             </div>
             <h2>Order Placed Successfully!</h2>
             <p>Thank you for your order, ${orderData.customer.firstName}!</p>
-            <p>Order Total: ${orderData.total.toLocaleString()}</p>
+            <p>Order Total: ${orderData.total.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
             <p>Payment Method: ${orderData.payment.toUpperCase()}</p>
             <p>We'll send you a confirmation email shortly.</p>
             <div class="success-actions">
