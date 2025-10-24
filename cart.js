@@ -4,7 +4,7 @@ let cart = JSON.parse(localStorage.getItem('cart')) || [];
 // Initialize cart display
 document.addEventListener('DOMContentLoaded', function() {
     updateCartDisplay();
-    updateCartIcon();
+    updateCartIcon(); // Initial icon update
 });
 
 // Add product to cart
@@ -21,8 +21,8 @@ function addToCart(product) {
     }
     
     localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartDisplay();
-    updateCartIcon();
+    updateCartDisplay(); // Update cart page if open
+    updateCartIcon();    // Update navbar icon count
     showCartNotification();
 }
 
@@ -34,13 +34,13 @@ function removeFromCart(productId) {
     updateCartIcon();
 }
 
-// Update product quantity
+// Update product quantity (e.g., from +/- buttons, not direct input)
 function updateQuantity(productId, change) {
     const item = cart.find(item => item.id === productId);
     if (item) {
         item.quantity += change;
         if (item.quantity <= 0) {
-            removeFromCart(productId);
+            removeFromCart(productId); // Remove if quantity is zero or less
         } else {
             localStorage.setItem('cart', JSON.stringify(cart));
             updateCartDisplay();
@@ -49,13 +49,14 @@ function updateQuantity(productId, change) {
     }
 }
 
-// Update cart display on cart page
+// Update cart display on the dedicated cart page (cart.html)
 function updateCartDisplay() {
     const cartItemsContainer = document.getElementById('cart-items');
     const cartSubtotal = document.getElementById('cart-subtotal');
     const cartTotal = document.getElementById('cart-total');
     
-    if (!cartItemsContainer) return;
+    // Only proceed if we are on the cart page (these elements exist)
+    if (!cartItemsContainer) return; 
     
     if (cart.length === 0) {
         cartItemsContainer.innerHTML = `
@@ -66,27 +67,31 @@ function updateCartDisplay() {
                 </td>
             </tr>
         `;
-        cartSubtotal.textContent = 'UGX.0';
-        cartTotal.textContent = 'UGX.0';
+        // Ensure subtotal/total elements exist before updating
+        if (cartSubtotal) cartSubtotal.textContent = 'UGX.0';
+        if (cartTotal) cartTotal.textContent = 'UGX.0';
         return;
     }
     
     let total = 0;
     cartItemsContainer.innerHTML = cart.map(item => {
-        const itemTotal = parseFloat(item.price.replace(/[^\d]/g, '')) * item.quantity;
+        // Ensure price is treated as a number, removing currency/commas
+        const priceNumber = parseFloat(String(item.price).replace(/[^\d.-]/g, '')) || 0;
+        const itemTotal = priceNumber * item.quantity;
         total += itemTotal;
         
         return `
             <tr>
-                <td><a href="#" onclick="removeFromCart('${item.id}')"><i class="far fa-times-circle"></i></a></td>
-                <td><img src="${item.image}" alt="${item.name}"></td>
+                <td><a href="#" onclick="event.preventDefault(); removeFromCart('${item.id}')"><i class="far fa-times-circle"></i></a></td>
+                <td><img src="${item.image}" alt="${item.name}" style="width: 50px; height: auto;"></td>
                 <td>
                     <h5>${item.name}</h5>
-                    <small>${item.category}</small>
+                    <small>${item.category || ''}</small> 
                 </td>
                 <td>${item.price}</td>
                 <td>
                     <input type="number" value="${item.quantity}" min="1" 
+                           style="width: 60px; text-align: center;"
                            onchange="updateQuantityFromInput('${item.id}', this.value)">
                 </td>
                 <td>UGX.${itemTotal.toLocaleString()}</td>
@@ -94,253 +99,243 @@ function updateCartDisplay() {
         `;
     }).join('');
     
-    cartSubtotal.textContent = `UGX.${total.toLocaleString()}`;
-    cartTotal.textContent = `UGX.${total.toLocaleString()}`;
+    // Update totals if elements exist
+    if (cartSubtotal) cartSubtotal.textContent = `UGX.${total.toLocaleString()}`;
+    if (cartTotal) cartTotal.textContent = `UGX.${total.toLocaleString()}`;
 }
 
-// Update quantity from input field
+// Update quantity specifically from the input field on the cart page
 function updateQuantityFromInput(productId, newQuantity) {
     const quantity = parseInt(newQuantity);
-    if (quantity > 0) {
-        const item = cart.find(item => item.id === productId);
-        if (item) {
-            item.quantity = quantity;
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateCartDisplay();
-            updateCartIcon();
-        }
+    
+    // Validate quantity is a positive number
+    if (isNaN(quantity) || quantity <= 0) {
+        // If invalid, consider removing or reverting, here we remove
+        removeFromCart(productId);
+        return; 
+    }
+
+    const item = cart.find(item => item.id === productId);
+    if (item) {
+        item.quantity = quantity;
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartDisplay(); // Update cart table totals
+        updateCartIcon();    // Update navbar icon count
     }
 }
 
-// Update cart icon with item count
+
+// *** UPDATED FUNCTION ***
+// Update ONLY the cart icons in the main navigation bar (#navbar and #mobile)
 function updateCartIcon() {
-    const cartIcons = document.querySelectorAll('.fa-cart-shopping');
+    // Select only the cart icons within the main navigation areas
+    const cartIcons = document.querySelectorAll('#lg-cart .fa-cart-shopping, #mobile .fa-cart-shopping');
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    
+
     cartIcons.forEach(icon => {
-        // Remove existing badge
-        const existingBadge = icon.parentElement.querySelector('.cart-badge');
+        let badgeContainer = icon.parentElement; // The <a> tag usually
+
+        // Ensure the container is suitable for positioning the badge
+        if (badgeContainer && window.getComputedStyle(badgeContainer).position === 'static') {
+            badgeContainer.style.position = 'relative'; // Needed for absolute positioning of badge
+        }
+
+        // Remove existing badge first
+        const existingBadge = badgeContainer ? badgeContainer.querySelector('.cart-badge') : null;
         if (existingBadge) {
             existingBadge.remove();
         }
         
-        // Add new badge if there are items
-        if (totalItems > 0) {
+        // Add new badge only if there are items in the cart
+        if (totalItems > 0 && badgeContainer) {
             const badge = document.createElement('span');
-            badge.className = 'cart-badge';
+            badge.className = 'cart-badge'; // Ensure this class is styled in your CSS
             badge.textContent = totalItems;
             
-            // Ensure parent element has relative positioning
-            if (icon.parentElement.style.position !== 'relative') {
-                icon.parentElement.style.position = 'relative';
-            }
+            // Basic styling for the badge (Add this to your style.css for better control)
+            badge.style.cssText = `
+                position: absolute;
+                top: -8px;       /* Adjust position as needed */
+                right: -10px;    /* Adjust position as needed */
+                background-color: red;
+                color: white;
+                border-radius: 50%;
+                padding: 2px 6px;
+                font-size: 10px;
+                font-weight: bold;
+                line-height: 1;
+                min-width: 18px; /* Ensure circle shape for single digit */
+                text-align: center;
+            `;
             
-            icon.parentElement.appendChild(badge);
+            badgeContainer.appendChild(badge);
         }
     });
-    
-    // Also update the mobile cart icon
-    const mobileCartIcon = document.querySelector('#mobile .fa-cart-shopping');
-    if (mobileCartIcon) {
-        const existingBadge = mobileCartIcon.parentElement.querySelector('.cart-badge');
-        if (existingBadge) {
-            existingBadge.remove();
-        }
-        
-        if (totalItems > 0) {
-            const badge = document.createElement('span');
-            badge.className = 'cart-badge';
-            badge.textContent = totalItems;
-            mobileCartIcon.parentElement.style.position = 'relative';
-            mobileCartIcon.parentElement.appendChild(badge);
-        }
-    }
 }
 
-// Show cart notification
+
+// Show cart notification (popup)
 function showCartNotification() {
-    // Create notification element
     const notification = document.createElement('div');
     notification.className = 'cart-notification';
     notification.textContent = 'Product added to cart!';
+    // Apply basic styles (consider moving to CSS)
     notification.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
-        background: #088178;
+        background: #088178; /* Theme color */
         color: white;
-        padding: 15px 20px;
-        border-radius: 5px;
-        z-index: 10000;
-        animation: slideIn 0.3s ease;
+        padding: 15px 25px;
+        border-radius: 8px;
+        z-index: 10001; /* High z-index */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        font-size: 1rem;
+        font-weight: 500;
+        opacity: 0; /* Start hidden */
+        transform: translateX(100%); /* Start off-screen */
+        transition: opacity 0.3s ease, transform 0.3s ease;
     `;
     
     document.body.appendChild(notification);
-    
-    // Remove notification after 3 seconds
+
+    // Animate in
     setTimeout(() => {
-        notification.remove();
-    }, 3000);
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateX(0)';
+    }, 10); // Small delay to allow transition
+
+    // Animate out and remove after 3 seconds
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+             if (notification.parentNode) { // Check if it's still in the DOM
+                notification.remove();
+             }
+        }, 300); // Wait for animation to finish
+    }, 3000); // Notification duration
 }
 
-// Proceed to checkout
+
+// Proceed to checkout page
 function proceedToCheckout() {
     if (cart.length === 0) {
-        alert('Your cart is empty!');
+        // Replace alert with a nicer modal or message if possible
+        alert('Your cart is empty! Please add items before proceeding.'); 
         return;
     }
-    window.location.href = 'checkout.html';
+    // Redirect to your checkout page
+    window.location.href = 'checkout.html'; 
 }
 
-// Product data - will be loaded from API
+
+// Product data - will eventually be loaded from an API
 let products = [];
 
-// Load products from API
+// Load products (currently uses fallback sample data)
 async function loadProducts() {
     try {
-        if (typeof api !== 'undefined') {
-            const response = await api.getProducts();
-            products = response.data || [];
+        // Placeholder for API call - Replace with your actual API endpoint if available
+        if (typeof api !== 'undefined' && typeof api.getProducts === 'function') {
+             const response = await api.getProducts();
+             // Assuming API returns { data: [...] } structure
+             products = response.data || []; 
+             console.log("Products loaded from API:", products);
         } else {
-            // Fallback to sample data if API is not available
-            products = [
-                {
-                    _id: 'iphone-xr',
-                    name: 'iPhone XR',
-                    category: 'Mobile devices',
-                    price: 2000000,
-                    image: 'jpeg.jpeg'
-                },
-                {
-                    _id: 'cctv-camera',
-                    name: 'CCTV Camera',
-                    category: 'Home security',
-                    price: 350000,
-                    image: 'security.jpeg'
-                },
-                {
-                    _id: 'jbl-speaker',
-                    name: 'JBL Speaker',
-                    category: 'Smart devices',
-                    price: 150000,
-                    image: 'portablespeaker.jpeg'
-                },
-                {
-                    _id: 'iwatch',
-                    name: 'iWatch',
-                    category: 'Mobile devices',
-                    price: 80000,
-                    image: 'watch.jpeg'
-                },
-                {
-                    _id: 'ipad',
-                    name: 'iPad',
-                    category: 'Tablet',
-                    price: 450000,
-                    image: 'jpeg1.jpeg'
-                },
-                {
-                    _id: 'earpods',
-                    name: 'Ear Pods',
-                    category: 'Phone accessories',
-                    price: 20000,
-                    image: 'airpods.jpeg'
-                }
-            ];
+             console.log("API not available, using fallback product data.");
+             throw new Error("API not defined or getProducts not a function"); // Force fallback
         }
+
+        // Basic validation of loaded product data
+        if (!Array.isArray(products) || products.length === 0) {
+            console.warn("API returned invalid or empty product data, using fallback.");
+            throw new Error("Invalid product data from API");
+        }
+
     } catch (error) {
-        console.error('Error loading products:', error);
-        // Use fallback data
+        console.error('Error loading products, using fallback:', error);
+        // Fallback sample data - Make sure image paths are correct relative to HTML file
         products = [
-            {
-                _id: 'iphone-xr',
-                name: 'iPhone XR',
-                category: 'Mobile devices',
-                price: 2000000,
-                image: 'jpeg.jpeg'
-            },
-            {
-                _id: 'cctv-camera',
-                name: 'CCTV Camera',
-                category: 'Home security',
-                price: 350000,
-                image: 'security.jpeg'
-            },
-            {
-                _id: 'jbl-speaker',
-                name: 'JBL Speaker',
-                category: 'Smart devices',
-                price: 150000,
-                image: 'portablespeaker.jpeg'
-            },
-            {
-                _id: 'iwatch',
-                name: 'iWatch',
-                category: 'Mobile devices',
-                price: 80000,
-                image: 'watch.jpeg'
-            },
-            {
-                _id: 'ipad',
-                name: 'iPad',
-                category: 'Tablet',
-                price: 450000,
-                image: 'jpeg1.jpeg'
-            },
-            {
-                _id: 'earpods',
-                name: 'Ear Pods',
-                category: 'Phone accessories',
-                price: 20000,
-                image: 'airpods.jpeg'
-            }
+            { _id: 'iphone-xr', name: 'Iphone XR', category: 'Mobile devices', price: 2000000, image: 'jpeg.jpeg' },
+            { _id: 'cctv-camera', name: 'CCTV Camera', category: 'Home security', price: 350000, image: 'security.jpeg' },
+            { _id: 'jbl-speaker', name: 'JBL Speaker', category: 'Smart devices', price: 150000, image: 'portablespeaker.jpeg' },
+            { _id: 'iwatch', name: 'Iwatch', category: 'Mobile devices', price: 80000, image: 'watch.jpeg' },
+            { _id: 'ipad', name: 'Ipad', category: 'Tablet', price: 450000, image: 'jpeg1.jpeg' },
+            { _id: 'earpods', name: 'Ear pods', category: 'Phone accesories', price: 20000, image: 'airpods.jpeg' }
         ];
+        console.log("Using fallback products:", products);
     }
+
+    // Ensure prices are consistently numbers if not already
+    products = products.map(p => ({
+        ...p,
+        // Attempt to convert price string (like "UGX.2,000,000") to number
+        price: typeof p.price === 'string' 
+               ? parseFloat(p.price.replace(/[^\d.-]/g, '')) || 0 
+               : (typeof p.price === 'number' ? p.price : 0)
+    }));
 }
 
-// Add click handlers to cart buttons
+
+// Add click handlers to "Add to Cart" buttons after products are loaded
 document.addEventListener('DOMContentLoaded', async function() {
-    // Load products from API
+    
+    // Load products first
     await loadProducts();
     
-    const cartButtons = document.querySelectorAll('.cart');
+    // Find all "Add to Cart" icons/buttons
+    const cartButtons = document.querySelectorAll('.cart'); 
+
     cartButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
+        button.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent default link behavior
             
-            // Find the product data from the clicked item
-            const productElement = this.closest('.Pro');
+            // Find the closest parent product container element
+            const productElement = this.closest('.Pro'); 
+            
             if (productElement) {
-                const productName = productElement.querySelector('.des h5').textContent;
-                const productPrice = productElement.querySelector('.des h4').textContent;
-                const productImage = productElement.querySelector('img').src.split('/').pop();
-                const productSpan = productElement.querySelector('.des span').textContent;
+                // Extract identifier (assuming the <span> holds the unique name used as ID in sample data)
+                const productNameSpan = productElement.querySelector('.des span');
+                const productIDAttempt = productNameSpan ? productNameSpan.textContent.trim() : null;
+
+                // Attempt to find the full product details from the loaded 'products' array
+                // We match based on the name extracted from the span, case-insensitive.
+                const productData = products.find(p => p.name.trim().toLowerCase() === productIDAttempt?.toLowerCase());
                 
-                // Find matching product in products data
-                const product = products.find(p => p.name === productSpan);
-                
-                if (product) {
-                    // Convert product to cart format
+                if (productData) {
+                    // Prepare the product object in the format needed for the cart
                     const cartProduct = {
-                        id: product._id,
-                        name: product.name,
-                        category: product.category,
-                        price: `UGX.${product.price.toLocaleString()}`,
-                        image: product.image
+                        id: productData._id, // Use the actual ID from loaded data
+                        name: productData.name,
+                        category: productData.category,
+                        // Format price for display, but ensure it was loaded as a number
+                        price: `UGX.${(productData.price || 0).toLocaleString()}`, 
+                        image: productData.image // Use the image path from loaded data
                     };
                     addToCart(cartProduct);
                 } else {
-                    // Fallback: create product object from DOM data
-                    const fallbackProduct = {
-                        id: productSpan.toLowerCase().replace(/\s+/g, '-'),
-                        name: productSpan,
-                        category: productName,
-                        price: productPrice,
-                        image: productImage
-                    };
-                    addToCart(fallbackProduct);
+                    console.warn(`Product data not found for item: ${productIDAttempt}. Check if products loaded correctly or if HTML matches data.`);
+                    // Optional: Fallback using data scraped directly from HTML (less reliable)
+                    // const productNameH5 = productElement.querySelector('.des h5')?.textContent || 'Unknown Category';
+                    // const productPriceH4 = productElement.querySelector('.des h4')?.textContent || 'UGX.0';
+                    // const productImageSrc = productElement.querySelector('img')?.src || '';
+                    // const fallbackProduct = {
+                    //     id: productIDAttempt ? productIDAttempt.toLowerCase().replace(/\s+/g, '-') : `fallback-${Date.now()}`,
+                    //     name: productIDAttempt || 'Unknown Product',
+                    //     category: productNameH5,
+                    //     price: productPriceH4,
+                    //     image: productImageSrc.split('/').pop() // Get filename
+                    // };
+                    // addToCart(fallbackProduct);
                 }
+            } else {
+                console.error("Could not find parent '.Pro' element for the clicked cart button.");
             }
         });
     });
+
+    // Initial cart display update (for cart page) and icon update (for navbar)
+    updateCartDisplay(); 
+    updateCartIcon(); 
 });
