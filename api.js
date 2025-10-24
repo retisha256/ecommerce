@@ -5,11 +5,13 @@ class ApiService {
     // Generic API call method
     async makeRequest(endpoint, options = {}) {
         const url = `${API_BASE_URL}${endpoint}`;
+        const isFormData = (typeof FormData !== 'undefined') && options && options.body instanceof FormData;
+        const headers = { ...(options && options.headers ? options.headers : {}) };
+        if (!isFormData) {
+            headers['Content-Type'] = headers['Content-Type'] || 'application/json';
+        }
         const config = {
-            headers: {
-                'Content-Type': 'application/json',
-                ...options.headers
-            },
+            headers,
             ...options
         };
 
@@ -40,9 +42,10 @@ class ApiService {
     }
 
     async createProduct(productData) {
+        const isFormData = (typeof FormData !== 'undefined') && productData instanceof FormData;
         return this.makeRequest('/products', {
             method: 'POST',
-            body: JSON.stringify(productData)
+            body: isFormData ? productData : JSON.stringify(productData)
         });
     }
 
