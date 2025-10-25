@@ -239,7 +239,7 @@ function showCartNotification() {
 }
 
 
-// Proceed to checkout page
+// order now page
 function proceedToCheckout() {
     if (cart.length === 0) {
         // Replace alert with a nicer modal or message if possible

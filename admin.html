@@ -9,12 +9,12 @@
 </head>
 <body>
   <section id="header">
-    <a href="index.html"><img src="img4.png" class="logo" alt="Novuna Electronics" /></a>
+    <a href="home.html"><img src="img4.png" class="logo" alt="Novuna Electronics" /></a>
     <div>
       <ul id="navbar">
-        <li><a href="index.html">Home</a></li>
+        <li><a href="home.html">Home</a></li>
         <li><a href="shop.html">Shop</a></li>
-        <li><a href="contactus.html">Contact us</a></li>
+        
         <li id="lg-cart"><a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a></li>
         <li><a href="admin.html" class="active">Admin</a></li>
         <li><a href="#" id="close"><i class="fa fa-times" aria-hidden="true"></i></a></li>
@@ -75,7 +75,7 @@
         const attempt = prompt('Enter admin password:');
         if (attempt !== PASS) {
           alert('Access denied');
-          window.location.href = 'index.html';
+          window.location.href = 'home.html';
           return;
         }
         localStorage.setItem(KEY, 'true');

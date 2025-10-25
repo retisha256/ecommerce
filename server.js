@@ -443,7 +443,7 @@ app.post('/api/payments/verify', async (req, res) => {
 
 // Serve static files (fallback to index only for browsers hitting root)
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(__dirname, 'home.html'));
 });
 
 // Error handling middleware

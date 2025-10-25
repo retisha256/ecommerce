@@ -188,7 +188,7 @@ function generateMobileMoneyPayment(orderData) {
 // Show mobile money payment instructions
 function showMobileMoneyInstructions(paymentData, orderData) {
     const paymentMethod = paymentData.paymentMethod === 'mtn' ? 'MTN Mobile Money' : 'Airtel Money';
-    const paymentNumber = paymentData.paymentMethod === 'mtn' ? '256754030391' : '256705030391';
+    const paymentNumber = paymentData.paymentMethod === 'mtn' ? '256754030391' : '256754030391';
     
     const instructionsHTML = `
         <div class="payment-instructions">
@@ -199,7 +199,7 @@ function showMobileMoneyInstructions(paymentData, orderData) {
             
             <div class="payment-steps">
                 <h3>Payment Instructions for ${paymentMethod}:</h3>
-                <ol>
+                <ol style="color: #000;">
                     <li>Dial *${paymentData.paymentMethod === 'mtn' ? '165*3' : '*185*9*1'}# on your phone</li>
                     <li>Select "Send Money" or "Pay Bill"</li>
                     <li>Enter merchant number: <strong>${paymentNumber}</strong></li>
@@ -210,7 +210,7 @@ function showMobileMoneyInstructions(paymentData, orderData) {
                 
                 <div class="payment-alternative">
                     <h4>Alternative Payment Method:</h4>
-                    <p>You can also pay directly via WhatsApp:</p>
+                    <p style="color:black;">You can also pay directly via WhatsApp:</p>
                     <a href="https://wa.me/${paymentNumber}?text=Hi, I want to pay for Order ${paymentData.orderId} - UGX ${paymentData.amount.toLocaleString(undefined, { maximumFractionDigits: 0 })}" 
                        class="whatsapp-pay-btn" target="_blank">
                         <i class="fab fa-whatsapp"></i> Pay via WhatsApp
@@ -219,7 +219,7 @@ function showMobileMoneyInstructions(paymentData, orderData) {
                 
                 <div class="payment-verification">
                     <h4>After Payment:</h4>
-                    <p>Once you've completed the payment, click the button below to confirm your order:</p>
+                    <p style="color:black;">Once you've completed the payment, click the button below to confirm your order:</p>
                     <button class="confirm-payment-btn" onclick="confirmPayment('${paymentData.orderId}')">
                         I Have Made Payment
                     </button>
@@ -300,7 +300,7 @@ function showOrderSuccess(orderData) {
             <p>Payment Method: ${orderData.payment.toUpperCase()}</p>
             <p>We'll send you a confirmation email shortly.</p>
             <div class="success-actions">
-                <a href="index.html" class="normal">Continue Shopping</a>
+                <a href="home.html" class="normal">Continue Shopping</a>
                 <a href="shop.html" class="normal">View Products</a>
             </div>
         </div>

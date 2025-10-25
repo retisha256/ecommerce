@@ -1,262 +1,205 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ecommerce website</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Novuna Electronics</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* --- Basic Reset --- */
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; }
+    body { background: #f5f5f5; }
+
+    /* --- Header --- */
+    #header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 20px 50px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    #header .logo { height: 50px; }
+    #navbar { list-style: none; display: flex; gap: 20px; }
+    #navbar li a { text-decoration: none; color: #333; font-weight: 500; }
+    #mobile { display: none; gap: 15px; align-items: center; }
+
+    /* --- Auth Section --- */
+    #auth-section {
+      display: flex; justify-content: center; align-items: center;
+      min-height: calc(100vh - 80px); /* minus header */
+      padding: 50px 20px;
+    }
+    .auth-container {
+      display: flex; width: 100%; max-width: 1000px; background: #fff; border-radius: 12px;
+      overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    }
+    .auth-left {
+      flex: 1; background: url('img4.png') center/cover no-repeat;
+      display: none; /* show on desktop only */
+    }
+    .auth-right {
+      flex: 1; padding: 40px; display: flex; flex-direction: column; justify-content: center;
+    }
+
+    /* --- Tabs --- */
+    .auth-tabs { display: flex; gap: 10px; margin-bottom: 30px; }
+    .auth-tab {
+      flex: 1; padding: 12px 0; text-align: center;
+      cursor: pointer; border-bottom: 2px solid transparent;
+      font-weight: bold; color: #555;
+      transition: all 0.3s;
+    }
+    .auth-tab.active { border-color: #088178; color: #088178; }
+
+    /* --- Forms --- */
+    .auth-form { display: none; flex-direction: column; gap: 20px; }
+    .auth-form.active { display: flex; }
+    .auth-form h2 { font-size: 28px; margin-bottom: 5px; color: #111; }
+    .auth-form p { color: #666; font-size: 14px; margin-bottom: 20px; }
+
+    .form-group { position: relative; display: flex; flex-direction: column; }
+    .form-group input {
+      padding: 12px 40px 12px 12px; border: 1px solid #ccc; border-radius: 8px;
+      font-size: 14px; outline: none; transition: border 0.3s;
+    }
+    .form-group input:focus { border-color: #088178; }
+    .form-icon {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      color: #aaa; font-size: 16px;
+    }
+
+    .form-options { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+    .checkbox-container { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+    .auth-btn {
+      background: #088178; color: #fff; border: none; padding: 12px; border-radius: 8px;
+      cursor: pointer; font-weight: bold; transition: all 0.3s;
+    }
+    .auth-btn:hover { background: #066658; }
+
+    .auth-divider { text-align: center; font-size: 14px; color: #888; margin: 15px 0; position: relative; }
+    .auth-divider::before, .auth-divider::after {
+      content: ''; height: 1px; background: #ccc; width: 40%; position: absolute; top: 50%;
+    }
+    .auth-divider::before { left: 0; }
+    .auth-divider::after { right: 0; }
+
+    .social-login { display: flex; gap: 10px; justify-content: center; }
+    .social-btn {
+      flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ccc; display: flex; align-items: center;
+      justify-content: center; gap: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s;
+    }
+    .social-btn.google-btn { background: #fff; color: #555; }
+    .social-btn.facebook-btn { background: #1877f2; color: #fff; border: none; }
+    .social-btn:hover { opacity: 0.9; }
+
+    /* --- Responsive --- */
+    @media (min-width: 900px) {
+      .auth-left { display: block; }
+    }
+    @media (max-width: 768px) {
+      .auth-container { flex-direction: column; }
+      .auth-left { display: none; }
+    }
+  </style>
 </head>
 <body>
-<section id="header"> 
-    <a href="#"><img src="img4.png"class="logo" alt=""></a>
-    <div>
-        <ul id="navbar">
-            <li><a class="active" href="index.html">Home</a></li>
-            <li><a href="shop.html">Shop</a></li>
-
-            <li id="lg-cart"><a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a></li>
-            <li><a href="admin.html">Admin</a></li>
-            <li><a href="#" id="close" ><i class="fa fa-times" aria-hidden="true"></i></a></li>
-        </ul>
-    </div>
+  <header id="header">
+    <a href="home.html"><img src="img4.png" class="logo" alt="Novuna Electronics"></a>
+    <ul id="navbar">
+      <li><a href="admin.html">Admin</a></li>
+    </ul>
     <div id="mobile">
-        <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a>
-        <i id="bar" class="fas fa-outdent"></i>
+      <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a>
+      <i id="bar" class="fas fa-outdent"></i>
     </div>
-</section>
+  </header>
 
-<section id="hero">
-  <h4>Hot Deals Alert!</h4>
-  <h2>Everyday low prices</h2>
-  <h1>Supplying quality</h1>
-  <p>Deliverying Excellence</p>
-  <a href="shop.html" class="normal">Shop Today</a>
-
-</section>
-
-<section id="feature" class="section-p1">
-    
-    </div>
-     <div class="fe-box">
-        <a href="shop.html" style="text-decoration: none; color: inherit; display: block;">
-          <img src="ordernow.jpeg" alt="">
-          <h6>Order now</h6>
-        </a>
-
-    </div>
-     <div class="fe-box">
-        <img src="delivery.jpeg" alt="">
-        <h6>Free delivery on big orders</h6>
-
-    </div>
-     <div class="fe-box">
-        <img src="save.jpeg" alt="">
-        <h6>Save money </h6>
-
-    </div>
-
-    <div class="fe-box">
-        <img src="freeshipping.png" alt="">
-        <h6>Free shipping</h6>
-
-    </div>
-     <div class="fe-box">
-        <img src="freeshipping.png" alt="">
-        <h6>Free shipping</h6>
-
-    </div>
-     <div class="fe-box">
-        <img src="online.jpeg" alt="">
-        <h6>online shopping</h6>
-    </div>    
-
-   
-</section>
-
-<section id="featuredproducts" class="section-p1">
-    <h2>Featured Products</h2>
-    <p></p>
-    <div class="pro-container">
-        
-        
-        
-        <div class="Pro">
-          <img src="jpeg.jpeg" alt="">
-          <div class="des">
-            <span>Iphone XR</span>
-            <h5>Mobile devices</h5>
-            <div class="star">
-                <i class="fas fa-star"></i>
-                 <i class="fas fa-star"></i>
-                  <i class="fas fa-star"></i>
-                   <i class="fas fa-star"></i>
-
-            </div>
-            <h4>UGX.2000,000</h4>
-          </div>
-          <a href="#"><i class="fa-solid fa-cart-shopping cart"></i></a>
-        </div>
-        <div class="Pro">
-          <img src="security.jpeg" alt="">
-          <div class="des">
-            <span>CCTV Camera</span>
-            <h5>Home security</h5>
-            <div class="star">
-                <i class="fas fa-star"></i>
-                 <i class="fas fa-star"></i>
-                  <i class="fas fa-star"></i>
-                   <i class="fas fa-star"></i>
-
-            </div>
-            <h4>350000</h4>
-          </div>
-          <a href="#"><i class="fa-solid fa-cart-shopping cart"></i></a>
-        </div>
-        <div class="Pro">
-          <img src="portablespeaker.jpeg" alt="">
-          <div class="des">
-            <span>JBL Speaker</span>
-            <h5>Smart devices</h5>
-            <div class="star">
-                <i class="fas fa-star"></i>
-                 <i class="fas fa-star"></i>
-                  <i class="fas fa-star"></i>
-                   <i class="fas fa-star"></i>
-
-            </div>
-            <h4>UGX.150,000</h4>
-          </div>
-          <a href="#"><i class="fa-solid fa-cart-shopping cart"></i></a>
-        </div>
-        
-        <div class="Pro">
-          <img src="watch.jpeg" alt="">
-          <div class="des">
-            <span>Iwatch</span>
-            <h5>Mobile devices</h5>
-            <div class="star">
-                <i class="fas fa-star"></i>
-                 <i class="fas fa-star"></i>
-                  <i class="fas fa-star"></i>
-                   <i class="fas fa-star"></i>
-
-            </div>
-            <h4>UGX.80,000</h4>
-          </div>
-          <a href="#"><i class="fa-solid fa-cart-shopping cart"></i></a>
-        </div>
-        <div class="Pro">
-          <img src="jpeg1.jpeg" alt="">
-          <div class="des">
-            <span>Ipad</span>
-            <h5>Tablet</h5>
-            <div class="star">
-                <i class="fas fa-star"></i>
-                 <i class="fas fa-star"></i>
-                  <i class="fas fa-star"></i>
-                   <i class="fas fa-star"></i>
-
-            </div>
-            <h4>UGX.450,000</h4>
-          </div>
-          <a href="#"><i class="fa-solid fa-cart-shopping cart"></i></a>
+  <section id="auth-section">
+    <div class="auth-container">
+      <div class="auth-left"></div>
+      <div class="auth-right">
+        <div class="auth-tabs">
+          <button class="auth-tab active" onclick="showTab('login')">Login</button>
+          <button class="auth-tab" onclick="showTab('signup')">Sign Up</button>
         </div>
 
-        <div class="Pro">
-          <img src="airpods.jpeg" alt="">
-          <div class="des">
-            <BR></BR>
-            
-            <span>Ear pods</span>
-            <h5>Phone accesories</h5>
-            <div class="star">
-                <i class="fas fa-star"></i>
-                 <i class="fas fa-star"></i>
-                  <i class="fas fa-star"></i>
-                   <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-
+        <div id="login-form" class="auth-form active">
+          <h2>Welcome Back!</h2>
+          <p>Sign in to your account to continue shopping</p>
+          <form id="loginForm">
+            <div class="form-group">
+              <input type="email" id="loginEmail" name="email" placeholder="Email Address" required>
+              <i class="fas fa-envelope form-icon"></i>
             </div>
-            <h4>UGX.20,000</h4>
+            <div class="form-group">
+              <input type="password" id="loginPassword" name="password" placeholder="Password" required>
+              <i class="fas fa-lock form-icon"></i>
+            </div>
+            <div class="form-options">
+              <label class="checkbox-container">
+                <input type="checkbox" id="rememberMe">
+                Remember me
+              </label>
+              <a href="#" class="forgot-password">Forgot Password?</a>
+            </div>
+            <button type="submit" class="auth-btn">Sign In</button>
+          </form>
+          <div class="auth-divider">or continue with</div>
+          <div class="social-login">
+            <button class="social-btn google-btn"><i class="fab fa-google"></i> Google</button>
+            <button class="social-btn facebook-btn"><i class="fab fa-facebook-f"></i> Facebook</button>
           </div>
-          <a href="#"><i class="fa-solid fa-cart-shopping cart"></i></a>
         </div>
 
-        
-
-
-        
-        
-    </div>
-
-</section>
-
-<section id="banner" class="section-m1">
-    <h4>Big Sale This Weekend </h4>
-    <h2>  Get up to <span>50% off </span>on selected electronics!           
-</h2>
-    <a href="shop.html" class="normal">Shop Now</a>
-</section>
-
-<!-- Payment Logos Section -->
-<section id="payments">
-   <div class="payment-container">
-      <img src="mtn" alt="MTN Mobile Money" class="payment-logo">
-      <img src="airtel.jpeg" alt="Airtel Money" class="payment-logo">
-   </div>
-</section>
-
-
-<!-- ===== Contact Section ===== -->
-<footer id="contact" class="section-p1">
-  <div class="footer-container">
-    <div class="footer-col">
-      <h3>INFORMATION</h3>
-      <ul>
-        <li><a href="#">About us</a></li>
-        <li><a href="#">Delivery Information</a></li>
-        <li><a href="#">Privacy Policy</a></li>
-        <li><a href="#">Terms & Conditions</a></li>
-      </ul>
-    </div>
-
-    <div class="footer-col">
-      <h3>ACCOUNT</h3>
-      <ul>
-        <li><a href="#">My Account</a></li>
-        <li><a href="#">Order History</a></li>
-        <li><a href="#">Wishlist</a></li>
-        <li><a href="#">Newsletter</a></li>
-      </ul>
-    </div>
-
-    <div class="footer-col">
-      <h3>CONTACT US</h3>
-      <p><strong>Address:</strong> Kampala, Uganda</p>
-                <p><strong>Phone:</strong> +256 754 030391</p>
-      <p><strong>Email:</strong>Customerservice.Novuna@gmail.com</p>
-      <div class="socials">
-        <a href="#"><i class="fab fa-facebook-f"></i></a>
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
+        <div id="signup-form" class="auth-form">
+          <h2>Create Account</h2>
+          <p>Join us and start shopping for the best electronics</p>
+          <form id="signupForm">
+            <div class="form-group">
+              <input type="text" id="firstName" name="firstName" placeholder="First Name" required>
+              <i class="fas fa-user form-icon"></i>
+            </div>
+            <div class="form-group">
+              <input type="text" id="lastName" name="lastName" placeholder="Last Name" required>
+              <i class="fas fa-user form-icon"></i>
+            </div>
+            <div class="form-group">
+              <input type="email" id="signupEmail" name="email" placeholder="Email Address" required>
+              <i class="fas fa-envelope form-icon"></i>
+            </div>
+            <div class="form-group">
+              <input type="tel" id="signupPhone" name="phone" placeholder="Phone Number" required>
+              <i class="fas fa-phone form-icon"></i>
+            </div>
+            <div class="form-group">
+              <input type="password" id="signupPassword" name="password" placeholder="Password" required>
+              <i class="fas fa-lock form-icon"></i>
+            </div>
+            <div class="form-group">
+              <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required>
+              <i class="fas fa-lock form-icon"></i>
+            </div>
+            <div class="form-options">
+              <label class="checkbox-container">
+                <input type="checkbox" id="agreeTerms" required>
+                I agree to the <a href="#" class="terms-link">Terms & Conditions</a> and <a href="#" class="terms-link">Privacy Policy</a>
+              </label>
+            </div>
+            <button type="submit" class="auth-btn">Create Account</button>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 
- 
-
-<!-- Floating WhatsApp -->
-<a href="https://wa.me/256754030391" class="whatsapp-float" target="_blank" aria-label="Chat on WhatsApp">
-  <i class="fab fa-whatsapp"></i>
-</a>
-  <p class="footer-bottom">© 2025 Novuna electronics. All rights reserved.</p>
-</footer>
-
-
-
-    <script src="api.js"></script>
-    <script src="script.js"></script>
-    <script src="cart.js"></script>
+  <script src="api.js"></script>
+  <script src="script.js"></script>
+  <script src="auth.js"></script>
+  <script>
+    function showTab(tab) {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+      document.querySelector(`[onclick="showTab('${tab}')"]`).classList.add('active');
+      document.getElementById(`${tab}-form`).classList.add('active');
+    }
+  </script>
 </body>
 </html>

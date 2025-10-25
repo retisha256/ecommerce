@@ -64,7 +64,7 @@ A complete ecommerce website with mobile money integration for electronics sales
    ```
 
 6. **Access the application**
-   - Frontend: Open `index.html` in your browser
+   - Frontend: Open `home.html` in your browser
    - API: http://localhost:5000/api
 
 ## API Endpoints
@@ -108,7 +108,7 @@ A complete ecommerce website with mobile money integration for electronics sales
 
 ```
 ecommerce/
-├── index.html          # Home page
+├── home.html          # Home page
 ├── shop.html           # Product catalog
 ├── cart.html           # Shopping cart
 ├── checkout.html       # Checkout process
@@ -128,7 +128,7 @@ ecommerce/
 1. Browse products on the home page or shop page
 2. Add products to cart by clicking the cart icon
 3. View cart and adjust quantities
-4. Proceed to checkout
+4. order now
 5. Fill in billing information
 6. Select payment method (MTN or Airtel)
 7. Follow payment instructions
