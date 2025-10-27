@@ -1,3 +1,34 @@
+/**
+ * Database Connection Module (db.js)
+ * Connects the Node.js application to MongoDB using Mongoose.
+ */
+const mongoose = require('mongoose');
+const config = require('./config'); // Assuming config.js is in the same directory
+
+/**
+ * Establishes and maintains the connection to MongoDB.
+ */
+const connectDB = async () => {
+    try {
+        // Use the connection string from config.js (either environment variable or local fallback)
+        const conn = await mongoose.connect(config.MONGODB_URI, {
+            // These options are standard best practices for Mongoose v6+
+            // They are technically optional but good to keep for compatibility/stability
+        });
+
+        console.log(`MongoDB Connected: ${conn.connection.host}`);
+    } catch (error) {
+        // If the connection fails (e.g., mongod server isn't running)
+        console.error(`Error connecting to MongoDB: ${error.message}`);
+        
+        // Exit process with failure code
+        process.exit(1);
+    }
+};
+
+module.exports = connectDB;
+
+
 module.exports = {
     // Server Configuration
     PORT: process.env.PORT || 5000,
@@ -26,3 +57,4 @@ module.exports = {
     MTN_API_KEY: process.env.MTN_API_KEY || 'your_mtn_api_key',
     AIRTEL_API_KEY: process.env.AIRTEL_API_KEY || 'your_airtel_api_key'
 };
+
