@@ -4,19 +4,111 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cart - Novuna Electronics</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- Note: You should combine style.css and this HTML into one file if this were the final output, but I'm keeping it split for now based on your files. -->
+    <link rel="stylesheet" href="style.css"> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Add basic cart page styling to ensure readability on dark background */
+        #cart {
+            overflow-x: auto;
+            padding-bottom: 50px;
+        }
+        #cart table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            min-width: 700px;
+            color: #fff; /* Ensure text color is visible */
+        }
+        #cart table thead {
+            border-bottom: 2px solid #6B46C1;
+        }
+        #cart table thead td {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 13px;
+            padding: 18px 0;
+            text-align: center;
+        }
+        #cart table tbody tr td {
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            vertical-align: middle;
+            color: #ccc;
+        }
+        #cart table tbody tr td a {
+            color: #F59E0B;
+            font-size: 18px;
+        }
+        #cart-add {
+            display: flex;
+            justify-content: flex-end;
+            padding-top: 50px;
+        }
+        #subtotal {
+            width: 50%;
+            padding: 30px;
+            border: 2px solid #6B46C1;
+            border-radius: 12px;
+            background-color: #1a1a1a;
+            color: #fff;
+        }
+        #subtotal table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+            background-color: #1a1a1a;
+        }
+        #subtotal table td {
+            padding: 10px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 16px;
+        }
+        #subtotal table tr:last-child td {
+            font-size: 18px;
+            font-weight: 700;
+            color: #F59E0B;
+        }
+        /* Style for the input field to make it dark mode friendly */
+        #cart table input[type="number"] {
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #6B46C1;
+        }
+    </style>
 </head>
 <body>
+    <!-- HEADER SECTION (unchanged from your original) -->
     <section id="header"> 
         <a href="index.html"><img src="img4.png" class="logo" alt="Novuna Electronics"></a>
         <div>
             <ul id="navbar">
                 <li><a href="index.html">Home</a></li>
+                <li id="search-container">
+                    <div class="search-box">
+                        <input type="text" id="search-input" placeholder="Search products...">
+                        <button id="search-btn"><i class="fas fa-search"></i></button>
+                    </div>
+                </li>
                 <li><a href="shop.html">Shop</a></li>
-              
-                <li id="lg-cart"><a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a></li>
-                <li><a href="admin.html">Admin</a></li>
+                <!-- Account Dropdown -->
+                <li class="account-dropdown">
+                    <a href="#" id="account-toggle">
+                        <i class="fas fa-user"></i>Account
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                    </a>
+                    <div class="dropdown-menu" id="account-menu">
+                        <a href="login.html" class="dropdown-item">
+                            <i class="fas fa-sign-in-alt"></i> Sign In
+                        </a>
+                        <a href="login.html" class="dropdown-item">
+                            <i class="fas fa-user-plus"></i> Create Account
+                        </a>
+                    </div>
+                </li>
+                <li id="lg-cart"><a class="active" href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a></li>
                 <li><a href="#" id="close"><i class="fa fa-times" aria-hidden="true"></i></a></li>
             </ul>
         </div>
@@ -26,7 +118,9 @@
         </div>
     </section>
 
+    <!-- CART ITEMS SECTION -->
     <section id="cart" class="section-p1">
+        <h2 style="color: #F59E0B; margin-bottom: 20px;">Your Shopping Cart</h2>
         <table width="100%">
             <thead>
                 <tr>
@@ -39,32 +133,34 @@
                 </tr>
             </thead>
             <tbody id="cart-items">
-                <!-- Cart items will be dynamically added here -->
+                <!-- Cart items will be dynamically added here by cart.js -->
             </tbody>
         </table>
     </section>
 
+    <!-- CART TOTALS SECTION -->
     <section id="cart-add" class="section-p1">
         <div id="subtotal">
             <h3>Cart Totals</h3>
             <table>
                 <tr>
                     <td>Cart Subtotal</td>
-                    <td id="cart-subtotal">UGX.0</td>
+                    <td id="cart-subtotal" style="color: #fff;">UGX.0</td> 
                 </tr>
                 <tr>
                     <td>Shipping</td>
-                    <td>Free</td>
+                    <td style="color: #fff;">Free</td>
                 </tr>
                 <tr>
                     <td><strong>Total</strong></td>
-                    <td><strong id="cart-total">UGX.0</strong></td>
+                    <td><strong id="cart-total" style="color: #F59E0B;">UGX.0</strong></td>
                 </tr>
             </table>
-            <button class="normal" onclick="proceedToCheckout()">order now</button>
+            <button class="normal" onclick="proceedToCheckout()">ORDER NOW</button>
         </div>
     </section>
 
+    <!-- SCRIPTS -->
     <script src="api.js"></script>
     <script src="script.js"></script>
     <script src="cart.js"></script>

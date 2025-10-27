@@ -12,11 +12,54 @@
         <a href="index.html"><img src="img4.png" class="logo" alt="Novuna Electronics"></a>
         <div>
             <ul id="navbar">
-                <li><a href="index.html">Home</a></li>
+               
+               
+                 <li id="search-container">
+
+                    <div class="search-box">
+ 
+                        <input type="text" id="search-input" placeholder="Search products...">
+
+                        <button id="search-btn"><i class="fas fa-search"></i></button>
+
+                    </div>
+
+                </li>
                 <li><a class="active" href="shop.html">Shop</a></li>
 
+                <!-- Account Dropdown -->
+
+                <li class="account-dropdown">
+
+                    <a href="#" id="account-toggle">
+
+                        <i class="fas fa-user"></i>Account
+
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+
+                    </a>
+
+                    <div class="dropdown-menu" id="account-menu">
+
+                        <a href="login.html" class="dropdown-item">
+
+                            <i class="fas fa-sign-in-alt"></i> Sign In
+
+                        </a>
+
+                        <a href="login.html" class="dropdown-item">
+
+                            <i class="fas fa-user-plus"></i> Create Account
+
+                        </a>
+
+                    </div>
+
+                </li>
+
                 <li id="lg-cart"><a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a></li>
-                <li><a href="admin.html">Admin</a></li>
+                
+                
                 <li><a href="#" id="close"><i class="fa fa-times" aria-hidden="true"></i></a></li>
             </ul>
         </div>
