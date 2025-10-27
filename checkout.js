@@ -300,7 +300,7 @@ function showOrderSuccess(orderData) {
             <p>Payment Method: ${orderData.payment.toUpperCase()}</p>
             <p>We'll send you a confirmation email shortly.</p>
             <div class="success-actions">
-                <a href="home.html" class="normal">Continue Shopping</a>
+                <a href="index.html" class="normal">Continue Shopping</a>
                 <a href="shop.html" class="normal">View Products</a>
             </div>
         </div>

@@ -64,7 +64,7 @@ A complete ecommerce website with mobile money integration for electronics sales
    ```
 
 6. **Access the application**
-   - Frontend: Open `home.html` in your browser
+   - Frontend: Open `index.html` in your browser
    - API: http://localhost:5000/api
 
 ## API Endpoints
@@ -108,7 +108,7 @@ A complete ecommerce website with mobile money integration for electronics sales
 
 ```
 ecommerce/
-├── home.html          # Home page
+├── index.html          # Home page
 ├── shop.html           # Product catalog
 ├── cart.html           # Shopping cart
 ├── checkout.html       # Checkout process

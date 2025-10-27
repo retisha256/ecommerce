@@ -50,7 +50,7 @@ async function handleLogin(e) {
             
             // Redirect to home page
             setTimeout(() => {
-                window.location.href = 'home.html';
+                window.location.href = 'index.html';
             }, 1500);
         } else {
             showAuthNotification('Invalid email or password. Please try again.', 'error');
@@ -115,7 +115,7 @@ async function handleSignup(e) {
             
             // Redirect to home page
             setTimeout(() => {
-                window.location.href = 'home.html';
+                window.location.href = 'index.html';
             }, 1500);
         } else {
             showAuthNotification('Account creation failed. Please try again.', 'error');
@@ -274,7 +274,7 @@ function logout() {
     
     // Redirect to home page
     setTimeout(() => {
-        window.location.href = 'home.html';
+        window.location.href = 'index.html';
     }, 1500);
 }
 
