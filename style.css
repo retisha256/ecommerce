@@ -147,6 +147,235 @@ body {
    border-radius: 1px;
 }
 
+
+
+/* Search Bar Styles */
+#search-container {
+    display: flex;
+    align-items: center;
+    margin: 0 15px;
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    border-radius: 25px;
+    padding: 5px 15px;
+    border: 2px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.search-box:focus-within {
+    border-color: #088178;
+    box-shadow: 0 0 10px rgba(8, 129, 120, 0.2);
+}
+
+#search-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 8px 10px;
+    font-size: 14px;
+    width: 200px;
+    color: #333;
+}
+
+#search-input::placeholder {
+    color: #999;
+}
+
+#search-btn {
+    background: #088178;
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-left: 5px;
+}
+
+#search-btn:hover {
+    background: #066b63;
+    transform: scale(1.1);
+}
+
+/* Account Dropdown Styles */
+.account-dropdown {
+    position: relative;
+}
+
+#account-toggle {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+#account-toggle:hover {
+    color: #088178;
+}
+
+.dropdown-arrow {
+    font-size: 12px;
+    transition: transform 0.3s ease;
+}
+
+.account-dropdown.active .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    min-width: 180px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    padding: 10px 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    border: 1px solid #e0e0e0;
+}
+
+.account-dropdown:hover .dropdown-menu,
+.account-dropdown.active .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.dropdown-item:hover {
+    background: #f8f9fa;
+    color: #088178;
+    padding-left: 25px;
+}
+
+.dropdown-item i {
+    width: 16px;
+    text-align: center;
+}
+
+/* Mobile Search Styles */
+.search-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 100px;
+    z-index: 9999;
+}
+
+.search-overlay.active {
+    display: flex;
+}
+
+.search-container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+}
+
+#mobile-search-input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 25px;
+    font-size: 16px;
+    outline: none;
+    margin-bottom: 15px;
+}
+
+#mobile-search-input:focus {
+    border-color: #088178;
+}
+
+#mobile-search-btn {
+    background: #088178;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#close-search {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #999;
+}
+
+/* Mobile Responsive */
+@media (max-width: 799px) {
+    #search-container {
+        display: none;
+    }
+    
+    .account-dropdown {
+        display: none;
+    }
+    
+    #mobile-search,
+    #mobile-account {
+        color: #333;
+        font-size: 18px;
+        margin-right: 15px;
+    }
+}
+
+@media (min-width: 800px) {
+    #mobile-search,
+    #mobile-account {
+        display: none;
+    }
+}
+
+/* Adjust navbar spacing */
+#navbar li {
+    margin: 0 5px;
+}
+
+/* Make sure the dropdown appears above other elements */
+.account-dropdown {
+    z-index: 1001;
+}
+
 #mobile{
    display: none;
    align-items:center;
