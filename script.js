@@ -31,6 +31,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 	const container = document.querySelector('#product1 .pro-container');
 	if (!container) return; // Not a shop page
 
+	// Check if we're on a search results page
+	const urlParams = new URLSearchParams(window.location.search);
+	const searchQuery = urlParams.get('search');
+
 	// Load products from API
 	let apiProducts = [];
 	try {
@@ -50,17 +54,39 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 	// Merge products, ensuring no duplicates by name
 	const existingNames = new Set(apiProducts.map(p => (p.name || '').trim().toLowerCase()));
-	const merged = [
+	let merged = [
 		...apiProducts,
 		...localProducts.filter(p => !existingNames.has((p.name || '').trim().toLowerCase()))
 	].map(p => ({
 		_id: p._id || `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
 		name: p.name || 'Product',
 		category: p.category || 'General',
-		// Ensure price is stored as a clean NUMBER
 		price: Number(p.price || 0), 
-		image: p.image || 'img1.png'
+		image: p.image || 'img1.png',
+		description: p.description || ''
 	}));
+
+	// Apply search filter if on search results page
+	if (searchQuery) {
+		const query = searchQuery.toLowerCase();
+		const filtered = merged.filter(p => 
+			p.name.toLowerCase().includes(query) || 
+			p.category.toLowerCase().includes(query) ||
+			p.description.toLowerCase().includes(query)
+		);
+		
+		if (filtered.length === 0) {
+			container.innerHTML = `
+				<div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+					<h3 style="color: #f59e0b;">Product Not Found</h3>
+					<p style="color: #999;">No products match "<strong>${searchQuery}</strong>"</p>
+					<a href="shop.html" class="normal" style="display: inline-block; margin-top: 20px;">View All Products</a>
+				</div>
+			`;
+			return;
+		}
+		merged = filtered;
+	}
 
 	// Render products
 	const renderProducts = (products) => {
@@ -83,6 +109,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 			</div>
 		`).join('');
 
+		// Attach event listeners AFTER rendering
+		attachCartListeners();
+		
 		if (typeof updateCartIcon === 'function') updateCartIcon();
 	};
 
@@ -104,7 +133,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 						name: p.name || 'Product',
 						category: p.category || 'General',
 						price: Number(p.price || 0),
-						image: p.image || 'img1.png'
+						image: p.image || 'img1.png',
+						description: p.description || ''
 					}));
 					merged.push(...newMergedItems);
 					renderProducts(merged);
@@ -112,6 +142,36 @@ document.addEventListener('DOMContentLoaded', async () => {
 			} catch {}
 		}
 	});
+
+	// Function to attach cart listeners to dynamically rendered products
+	function attachCartListeners() {
+		// Remove old listeners by replacing the container
+		const cartButtons = container.querySelectorAll('.cart');
+		cartButtons.forEach(button => {
+			// Clone to remove old event listeners
+			const newButton = button.cloneNode(true);
+			button.parentNode.replaceChild(newButton, button);
+			
+			// Attach new listener
+			newButton.addEventListener('click', function(e) {
+				e.preventDefault();
+				const productCard = this.closest('.Pro');
+				if (productCard) {
+					const productData = {
+						id: productCard.getAttribute('data-id'),
+						name: productCard.getAttribute('data-name'),
+						category: productCard.getAttribute('data-category'),
+						price: parseFloat(productCard.getAttribute('data-price')),
+						image: productCard.getAttribute('data-image')
+					};
+					
+					if (typeof addToCart === 'function') {
+						addToCart(productData);
+					}
+				}
+			});
+		});
+	}
 });
 
 

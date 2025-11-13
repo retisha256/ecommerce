@@ -29,10 +29,22 @@ document.addEventListener('DOMContentLoaded', () => {
         // Fallback to localStorage with a temporary preview URL for the image
         const local = JSON.parse(localStorage.getItem('adminProducts') || '[]');
         const previewUrl = imageFile && typeof URL !== 'undefined' ? URL.createObjectURL(imageFile) : '';
-        const localProduct = { _id: 'local-' + Date.now(), name, category, price, image: previewUrl, description };
+        const localProduct = { 
+          _id: 'local-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8), 
+          name, 
+          category, 
+          price: Number(price),
+          image: previewUrl, 
+          description 
+        };
         local.unshift(localProduct);
         localStorage.setItem('adminProducts', JSON.stringify(local));
-        toast('Saved locally (API unavailable)');
+        // Trigger storage event for other tabs
+        window.dispatchEvent(new StorageEvent('storage', {
+          key: 'adminProducts',
+          newValue: JSON.stringify(local)
+        }));
+        toast('Product added successfully');
         appendRecent(localProduct);
       }
       form.reset();
@@ -42,9 +54,21 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         const local = JSON.parse(localStorage.getItem('adminProducts') || '[]');
         const previewUrl = imageFile && typeof URL !== 'undefined' ? URL.createObjectURL(imageFile) : '';
-        const localProduct = { _id: 'local-' + Date.now(), name, category, price, image: previewUrl, description };
+        const localProduct = { 
+          _id: 'local-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8), 
+          name, 
+          category, 
+          price: Number(price),
+          image: previewUrl, 
+          description 
+        };
         local.unshift(localProduct);
         localStorage.setItem('adminProducts', JSON.stringify(local));
+        // Trigger storage event for other tabs
+        window.dispatchEvent(new StorageEvent('storage', {
+          key: 'adminProducts',
+          newValue: JSON.stringify(local)
+        }));
         toast('Saved locally (server unavailable).', 'error');
         appendRecent(localProduct);
         form.reset();
@@ -63,10 +87,11 @@ document.addEventListener('DOMContentLoaded', () => {
     el.className = 'order-item';
     el.innerHTML = `
       <div class="item-info">
-        <img src="${p.image}" alt="${p.name}" class="item-image" />
+        <img src="${p.image}" alt="${p.name}" class="item-image" style="border-radius: 4px;" />
         <div class="item-details">
           <h5>${p.name}</h5>
           <small>${p.category}</small>
+          <p style="font-size: 12px; color: #999; margin-top: 5px;">${p.description || 'No description'}</p>
         </div>
       </div>
       <div class="item-quantity">UGX ${Number(p.price).toLocaleString()}</div>

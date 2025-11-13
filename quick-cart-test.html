@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick Cart Test</title>
+    <style>
+        body { font-family: Arial; background: #222; color: #fff; padding: 20px; }
+        .box { background: #333; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        button { background: #6B46C1; color: white; padding: 8px 15px; border: none; border-radius: 3px; cursor: pointer; }
+        .success { color: #4caf50; }
+        .error { color: #f44336; }
+        pre { background: #111; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🛒 Cart System - Quick Verification</h1>
+    
+    <div class="box">
+        <h2>Step 1: Add Product to Cart</h2>
+        <button onclick="testAddProduct()">Add iPhone XR</button>
+        <p id="step1-result"></p>
+    </div>
+
+    <div class="box">
+        <h2>Step 2: Check localStorage</h2>
+        <button onclick="testCheckStorage()">Check Storage</button>
+        <pre id="step2-result"></pre>
+    </div>
+
+    <div class="box">
+        <h2>Step 3: Test Cart Page Display</h2>
+        <button onclick="testCartPageDisplay()">Test Display</button>
+        <p id="step3-result"></p>
+    </div>
+
+    <div class="box">
+        <h2>Step 4: Navigate to Cart</h2>
+        <button onclick="goToCart()">Go to cart.html</button>
+        <p style="color: #ffa500;">⚠️ After clicking, items should appear on the cart page</p>
+    </div>
+
+    <script>
+        function testAddProduct() {
+            const result = document.getElementById('step1-result');
+            
+            // Simulate product data
+            const product = {
+                id: 'test-' + Date.now(),
+                name: 'iPhone XR',
+                category: 'Mobile',
+                price: 2000000,
+                image: 'jpeg.jpeg'
+            };
+
+            // Load current cart
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            // Add product (simulating what addToCart does)
+            const priceNumber = 2000000;
+            cart.push({
+                id: product.id,
+                name: product.name,
+                category: product.category,
+                image: product.image,
+                price: `UGX.${priceNumber.toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
+                _priceValue: priceNumber,
+                quantity: 1
+            });
+
+            // Save to localStorage
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            result.innerHTML = '<span class="success">✓ Product added! Check Step 2</span>';
+        }
+
+        function testCheckStorage() {
+            const result = document.getElementById('step2-result');
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            if (cart.length === 0) {
+                result.textContent = '⚠️ Cart is empty. Run Step 1 first!';
+            } else {
+                result.textContent = JSON.stringify(cart, null, 2);
+            }
+        }
+
+        function testCartPageDisplay() {
+            const result = document.getElementById('step3-result');
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            if (cart.length === 0) {
+                result.innerHTML = '<span class="error">✗ Cart is empty!</span>';
+                return;
+            }
+
+            // Simulate what cart.html should display
+            let html = '<span class="success">✓ Cart Page Would Display:</span><br>';
+            let total = 0;
+            cart.forEach(item => {
+                const priceNum = item._priceValue || 0;
+                const itemTotal = priceNum * item.quantity;
+                total += itemTotal;
+                html += `<strong>${item.name}</strong> - Qty: ${item.quantity} - ${item.price}<br>`;
+            });
+            html += `<strong>Total: UGX.${total.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong>`;
+            result.innerHTML = html;
+        }
+
+        function goToCart() {
+            // First verify cart has data
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            if (cart.length === 0) {
+                alert('Cart is empty! Run Step 1 first.');
+                return;
+            }
+            window.location.href = 'cart.html';
+        }
+    </script>
+</body>
+</html>

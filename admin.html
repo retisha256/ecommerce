@@ -65,18 +65,32 @@
   <script src="api.js"></script>
   <script src="script.js"></script>
   <script>
+    // Admin Authentication Check
     (function () {
-      const KEY = 'adminAuth';
-      const PASS = 'letmein'; // simple gate; change as needed
-      const isAuthed = localStorage.getItem(KEY) === 'true';
-      if (!isAuthed) {
-        const attempt = prompt('Enter admin password:');
-        if (attempt !== PASS) {
-          alert('Access denied');
+      const ADMIN_AUTH_KEY = 'adminAuthenticated';
+      const ADMIN_PASSWORD = 'admin123'; // Change this to a more secure password
+      
+      // Check if already authenticated
+      const isAuthenticated = sessionStorage.getItem(ADMIN_AUTH_KEY) === 'true';
+      
+      if (!isAuthenticated) {
+        // Show authentication modal
+        const password = prompt('🔐 Enter Admin Password to continue:', '');
+        
+        if (password === null) {
+          // User cancelled
           window.location.href = 'index.html';
           return;
         }
-        localStorage.setItem(KEY, 'true');
+        
+        if (password !== ADMIN_PASSWORD) {
+          alert('❌ Invalid password. Access denied.');
+          window.location.href = 'index.html';
+          return;
+        }
+        
+        // Mark as authenticated for this session
+        sessionStorage.setItem(ADMIN_AUTH_KEY, 'true');
       }
     })();
   </script>

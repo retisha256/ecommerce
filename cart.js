@@ -3,16 +3,39 @@ let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
 // Initialize cart display
 document.addEventListener('DOMContentLoaded', function() {
+    // Reload cart from localStorage to ensure we have latest data
+    cart = JSON.parse(localStorage.getItem('cart')) || [];
     updateCartDisplay();
     updateCartIcon(); // Initial icon update
 });
 
+// Listen for storage changes from other tabs/windows
+window.addEventListener('storage', function(e) {
+    if (e.key === 'cart') {
+        cart = JSON.parse(e.newValue || '[]');
+        updateCartDisplay();
+        updateCartIcon();
+    }
+});
+
+// Listen for page visibility changes (when user returns to the tab)
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        // Page became visible, refresh cart data
+        cart = JSON.parse(localStorage.getItem('cart')) || [];
+        updateCartDisplay();
+        updateCartIcon();
+    }
+});
+
 // Add product to cart
 function addToCart(product) {
+    console.log('Adding to cart:', product);
     const existingItem = cart.find(item => item.id === product.id);
     
     if (existingItem) {
         existingItem.quantity += 1;
+        console.log('Item already in cart, quantity updated:', existingItem.quantity);
     } else {
         // Ensure price is stored correctly when adding
         const priceNumber = typeof product.price === 'string' 
@@ -20,14 +43,19 @@ function addToCart(product) {
                             : (typeof product.price === 'number' ? product.price : 0);
 
         cart.push({
-            ...product,
+            id: product.id || Date.now(),
+            name: product.name || 'Unknown Product',
+            category: product.category || '',
+            image: product.image || '',
             price: `UGX.${priceNumber.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, // Store with formatting (no decimals)
             _priceValue: priceNumber, // Store raw number value
             quantity: 1
         });
+        console.log('New item added to cart');
     }
     
     localStorage.setItem('cart', JSON.stringify(cart));
+    console.log('Cart saved to localStorage:', JSON.stringify(cart));
     updateCartDisplay(); // Update cart page if open
     updateCartIcon();    // Update navbar icon count
     showCartNotification();
@@ -56,15 +84,21 @@ function updateQuantity(productId, change) {
     }
 }
 
-// *** UPDATED FUNCTION ***
 // Update cart display on the dedicated cart page (cart.html)
 function updateCartDisplay() {
     const cartItemsContainer = document.getElementById('cart-items');
     const cartSubtotal = document.getElementById('cart-subtotal');
     const cartTotal = document.getElementById('cart-total');
     
-    // Only proceed if we are on the cart page (these elements exist)
-    if (!cartItemsContainer) return; 
+    // If not on cart page, silently exit
+    if (!cartItemsContainer) {
+        console.log('Cart container not found - not on cart page');
+        return;
+    }
+    
+    // Reload cart from localStorage to ensure we have the latest data
+    cart = JSON.parse(localStorage.getItem('cart')) || [];
+    console.log('Cart items:', cart);
     
     if (cart.length === 0) {
         cartItemsContainer.innerHTML = `
@@ -84,37 +118,40 @@ function updateCartDisplay() {
     let total = 0;
     cartItemsContainer.innerHTML = cart.map(item => {
         
-        // Prefer raw stored value when present; fallback to robust parsing
-        let priceNumber = (typeof item._priceValue === 'number' && !isNaN(item._priceValue)) 
-            ? item._priceValue 
-            : (function() {
-                let priceString = String(item.price || '0');
-                priceString = priceString.replace(/ugx\.?\s?/i, ''); // remove UGX prefix
-                priceString = priceString.replace(/,/g, ''); // remove commas
-                return parseFloat(priceString) || 0;
-            })();
+        // Ensure we always have a valid price number
+        let priceNumber;
+        
+        if (typeof item._priceValue === 'number' && !isNaN(item._priceValue)) {
+            priceNumber = item._priceValue;
+        } else if (item.price) {
+            let priceString = String(item.price);
+            priceString = priceString.replace(/[^0-9.]/g, '');
+            priceNumber = parseFloat(priceString) || 0;
+        } else {
+            priceNumber = 0;
+        }
 
         const itemTotal = priceNumber * item.quantity;
         total += itemTotal;
         
-        // Use the original formatted price for display, calculated price for subtotal
-        const displayPrice = item.price || `UGX.${priceNumber.toLocaleString(undefined, { maximumFractionDigits: 0 })}`; 
+        // Always format the price consistently
+        const displayPrice = `UGX.${priceNumber.toLocaleString(undefined, { maximumFractionDigits: 0 })}`; 
 
         return `
             <tr>
                 <td><a href="#" onclick="event.preventDefault(); removeFromCart('${item.id}')"><i class="far fa-times-circle"></i></a></td>
-                <td><img src="${item.image}" alt="${item.name}" style="width: 50px; height: auto;"></td>
+                <td><img src="${item.image}" alt="${item.name}" style="width: 50px; height: auto; border-radius: 4px;"></td>
                 <td>
                     <h5>${item.name}</h5>
-                    <small>${item.category || ''}</small> 
+                    <small>${item.category || 'General'}</small> 
                 </td>
                 <td>${displayPrice}</td> 
                 <td>
                     <input type="number" value="${item.quantity}" min="1" 
-                           style="width: 60px; text-align: center;"
+                           style="width: 60px; text-align: center; padding: 5px; border-radius: 3px;"
                            onchange="updateQuantityFromInput('${item.id}', this.value)">
                 </td>
-                <td>UGX.${itemTotal.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td> 
+                <td><strong>UGX.${itemTotal.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong></td> 
             </tr>
         `;
     }).join('');
@@ -122,6 +159,7 @@ function updateCartDisplay() {
     // Update totals if elements exist
     if (cartSubtotal) cartSubtotal.textContent = `UGX.${total.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
     if (cartTotal) cartTotal.textContent = `UGX.${total.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+    console.log('Cart display updated with total:', total);
 }
 
 
@@ -151,6 +189,8 @@ function updateCartIcon() {
     // Select only the cart icons within the main navigation areas
     const cartIcons = document.querySelectorAll('#lg-cart .fa-cart-shopping, #mobile .fa-cart-shopping');
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    
+    console.log('updateCartIcon called - Total items:', totalItems, 'Icons found:', cartIcons.length);
 
     cartIcons.forEach(icon => {
         let badgeContainer = icon.parentElement; // The <a> tag usually
@@ -304,7 +344,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Load products so we have reference data when possible
     await loadProducts();
 
-    // Event delegation for dynamically rendered products
+    // Only use event delegation on pages that aren't dynamically rendering products
+    // (For shop.html, listeners are attached in script.js after rendering)
     document.body.addEventListener('click', function(event) {
         const icon = event.target.closest('.cart');
         if (!icon) return;
@@ -324,7 +365,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                     id: dataId,
                     name: dataName,
                     category: dataCategory || '',
-                    price: `UGX.${(dataPrice || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
+                    price: dataPrice, // Pass as number
                     image: dataImage || ''
                 };
                 addToCart(cartProduct);
@@ -332,7 +373,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
         }
 
-        // Fallback: try to match by name from statically coded products
+        // Fallback: try to match by name from statically coded products (for index.html static products)
         const nameSpan = icon.closest('.Pro')?.querySelector('.des span');
         const nameGuess = nameSpan ? nameSpan.textContent.trim() : null;
         const productData = nameGuess ? products.find(p => p.name.trim().toLowerCase() === nameGuess.toLowerCase()) : null;
@@ -341,12 +382,12 @@ document.addEventListener('DOMContentLoaded', async function() {
                 id: productData._id,
                 name: productData.name,
                 category: productData.category,
-                price: `UGX.${(productData.price || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
+                price: productData.price, // Pass as number
                 image: productData.image
             };
             addToCart(cartProduct);
         }
-    });
+    }, true); // Use capture phase to ensure we catch events before they bubble
 
     // Initial cart display update (for cart page) and icon update (for navbar)
     updateCartDisplay();

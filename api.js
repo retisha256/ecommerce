@@ -111,3 +111,27 @@ if (typeof module !== 'undefined' && module.exports) {
 } else {
     window.api = api;
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    cart = JSON.parse(localStorage.getItem('cart')) || [];
+    updateCartDisplay();
+});
+
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        cart = JSON.parse(localStorage.getItem('cart')) || [];
+        updateCartDisplay();
+    }
+});
+
+window.addEventListener('storage', function(e) {
+    if (e.key === 'cart') {
+        cart = JSON.parse(e.newValue || '[]');
+        updateCartDisplay();
+    }
+});
+
+function updateCartDisplay() {
+    // Reload cart from localStorage to ensure we have the latest data
+    cart = JSON.parse(localStorage.getItem('cart')) || [];
+}

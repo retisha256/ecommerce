@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Cart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 20px;
+        }
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        button {
+            background: #6B46C1;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #553399;
+        }
+        pre {
+            background: #111;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cart System Debug Test</h1>
+    
+    <div class="test-section">
+        <h2>1. Add Test Product to Cart</h2>
+        <button onclick="addTestProduct()">Add iPhone XR to Cart</button>
+        <button onclick="addTestProduct2()">Add iPad to Cart</button>
+        <p id="result"></p>
+    </div>
+
+    <div class="test-section">
+        <h2>2. View localStorage Data</h2>
+        <button onclick="viewCartData()">View Cart in localStorage</button>
+        <pre id="cart-data"></pre>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Simulate Page Navigation</h2>
+        <button onclick="goToCart()">Go to Cart Page</button>
+        <button onclick="goToShop()">Go to Shop Page</button>
+        <button onclick="goToHome()">Go to Home Page</button>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Clear Cart</h2>
+        <button onclick="clearCart()" style="background: #d32f2f;">Clear All Cart Data</button>
+    </div>
+
+    <script>
+        function addTestProduct() {
+            const product = {
+                id: 'iphone-xr',
+                name: 'iPhone XR',
+                category: 'Mobile devices',
+                price: 2000000,
+                image: 'jpeg.jpeg'
+            };
+            
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const exists = cart.find(item => item.id === product.id);
+            
+            if (exists) {
+                exists.quantity += 1;
+                document.getElementById('result').textContent = 'iPhone XR quantity updated!';
+            } else {
+                const priceNumber = typeof product.price === 'number' ? product.price : 0;
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    category: product.category,
+                    image: product.image,
+                    price: `UGX.${priceNumber.toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
+                    _priceValue: priceNumber,
+                    quantity: 1
+                });
+                document.getElementById('result').textContent = 'iPhone XR added to cart!';
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            viewCartData();
+        }
+
+        function addTestProduct2() {
+            const product = {
+                id: 'ipad',
+                name: 'iPad',
+                category: 'Tablet',
+                price: 450000,
+                image: 'jpeg1.jpeg'
+            };
+            
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const priceNumber = typeof product.price === 'number' ? product.price : 0;
+            cart.push({
+                id: product.id,
+                name: product.name,
+                category: product.category,
+                image: product.image,
+                price: `UGX.${priceNumber.toLocaleString(undefined, { maximumFractionDigits: 0 })}`,
+                _priceValue: priceNumber,
+                quantity: 1
+            });
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            document.getElementById('result').textContent = 'iPad added to cart!';
+            viewCartData();
+        }
+
+        function viewCartData() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const data = {
+                cartCount: cart.length,
+                items: cart,
+                lastUpdated: new Date().toLocaleTimeString()
+            };
+            document.getElementById('cart-data').textContent = JSON.stringify(data, null, 2);
+        }
+
+        function clearCart() {
+            localStorage.removeItem('cart');
+            document.getElementById('result').textContent = 'Cart cleared!';
+            document.getElementById('cart-data').textContent = 'Cart is now empty';
+        }
+
+        function goToCart() {
+            window.location.href = 'cart.html';
+        }
+
+        function goToShop() {
+            window.location.href = 'shop.html';
+        }
+
+        function goToHome() {
+            window.location.href = 'index.html';
+        }
+
+        // Initial view
+        viewCartData();
+    </script>
+</body>
+</html>
