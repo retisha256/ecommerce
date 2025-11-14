@@ -185,6 +185,18 @@
   <script src="script.js"></script>
   <script src="auth.js"></script>
   <script>
+    // Clear previous user data on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Clear all form fields to show fresh page
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        if (loginForm) loginForm.reset();
+        if (signupForm) signupForm.reset();
+        // Uncheck remember me
+        const rememberMe = document.getElementById('rememberMe');
+        if (rememberMe) rememberMe.checked = false;
+    });
+    
     function showTab(tab) {
       document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));

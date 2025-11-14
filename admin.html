@@ -74,8 +74,8 @@
       const isAuthenticated = sessionStorage.getItem(ADMIN_AUTH_KEY) === 'true';
       
       if (!isAuthenticated) {
-        // Show authentication modal
-        const password = prompt('🔐 Enter Admin Password to continue:', '');
+        // Show authentication modal with forgot password option
+        let password = prompt('🔐 Enter Admin Password to continue:\n\n(Type "forgot" if you forgot the password)', '');
         
         if (password === null) {
           // User cancelled
@@ -83,8 +83,39 @@
           return;
         }
         
-        if (password !== ADMIN_PASSWORD) {
-          alert('❌ Invalid password. Access denied.');
+        // Handle forgot password
+        if (password.toLowerCase() === 'forgot') {
+          const resetCode = prompt('Enter the reset code (ask the site owner for this):', '');
+          if (resetCode === null) {
+            window.location.href = 'index.html';
+            return;
+          }
+          if (resetCode === 'reset123') {
+            const newPassword = prompt('Enter your new admin password:', '');
+            if (newPassword && newPassword.length >= 6) {
+              alert('✅ Password reset! Your new password is: ' + newPassword + '\n\nPlease save this safely. Use this password to log in next time.');
+              // Store the new password in sessionStorage for this session
+              sessionStorage.setItem('ADMIN_PASSWORD_OVERRIDE', newPassword);
+              window.location.reload();
+              return;
+            } else {
+              alert('❌ Password must be at least 6 characters.');
+              window.location.href = 'index.html';
+              return;
+            }
+          } else {
+            alert('❌ Invalid reset code. The reset code is: reset123');
+            window.location.href = 'index.html';
+            return;
+          }
+        }
+        
+        // Check if there's an override password set
+        const overridePassword = sessionStorage.getItem('ADMIN_PASSWORD_OVERRIDE');
+        const finalPassword = overridePassword || ADMIN_PASSWORD;
+        
+        if (password !== finalPassword) {
+          alert('❌ Invalid password. Access denied.\n\nIf you forgot the password, type "forgot" when prompted.');
           window.location.href = 'index.html';
           return;
         }

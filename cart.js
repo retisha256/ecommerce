@@ -347,6 +347,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Only use event delegation on pages that aren't dynamically rendering products
     // (For shop.html, listeners are attached in script.js after rendering)
     document.body.addEventListener('click', function(event) {
+        // If we're on shop page which renders products dynamically, skip this global handler
+        if (document.querySelector('#product1 .pro-container')) {
+            // shop page has its own listeners (attachCartListeners), so ignore here
+            return;
+        }
+        console.log('global cart click handler running (non-shop page)');
         const icon = event.target.closest('.cart');
         if (!icon) return;
         event.preventDefault();

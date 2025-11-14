@@ -26,15 +26,29 @@ document.addEventListener('DOMContentLoaded', () => {
         toast('Product created successfully');
         appendRecent(created.data || { name, category, price, image: created?.data?.image, description });
       } else {
-        // Fallback to localStorage with a temporary preview URL for the image
+        // Fallback to localStorage with a persistent data URL for the image
         const local = JSON.parse(localStorage.getItem('adminProducts') || '[]');
-        const previewUrl = imageFile && typeof URL !== 'undefined' ? URL.createObjectURL(imageFile) : '';
+        // Convert imageFile to data URL so it persists in localStorage
+        let previewUrl = '';
+        try {
+          if (imageFile && imageFile.size) {
+            previewUrl = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result || '');
+              reader.onerror = () => resolve('');
+              reader.readAsDataURL(imageFile);
+            });
+          }
+        } catch (e) {
+          previewUrl = '';
+        }
+
         const localProduct = { 
           _id: 'local-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8), 
           name, 
           category, 
           price: Number(price),
-          image: previewUrl, 
+          image: previewUrl || 'img1.png', 
           description 
         };
         local.unshift(localProduct);
@@ -48,18 +62,32 @@ document.addEventListener('DOMContentLoaded', () => {
         appendRecent(localProduct);
       }
       form.reset();
-    } catch (err) {
+      } catch (err) {
       console.error(err);
       // As a graceful fallback, save locally so admin doesn't lose data
       try {
         const local = JSON.parse(localStorage.getItem('adminProducts') || '[]');
-        const previewUrl = imageFile && typeof URL !== 'undefined' ? URL.createObjectURL(imageFile) : '';
+        // Try to read image as data URL for persistence
+        let previewUrl = '';
+        try {
+          if (imageFile && imageFile.size) {
+            previewUrl = await new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result || '');
+              reader.onerror = () => resolve('');
+              reader.readAsDataURL(imageFile);
+            });
+          }
+        } catch (e) {
+          previewUrl = '';
+        }
+
         const localProduct = { 
           _id: 'local-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8), 
           name, 
           category, 
           price: Number(price),
-          image: previewUrl, 
+          image: previewUrl || 'img1.png', 
           description 
         };
         local.unshift(localProduct);
@@ -84,17 +112,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function appendRecent(p) {
     const el = document.createElement('div');
-    el.className = 'order-item';
+    el.className = 'Pro';  // Use same class as shop products for consistent sizing
+    el.style.cssText = 'margin: 10px; cursor: pointer;';
+    
+    // Create image element with fallback
+    const imgSrc = p.image && (p.image.startsWith('blob:') || p.image.startsWith('data:') || p.image.startsWith('http')) 
+      ? p.image 
+      : 'img1.png';
+    
     el.innerHTML = `
-      <div class="item-info">
-        <img src="${p.image}" alt="${p.name}" class="item-image" style="border-radius: 4px;" />
-        <div class="item-details">
-          <h5>${p.name}</h5>
-          <small>${p.category}</small>
-          <p style="font-size: 12px; color: #999; margin-top: 5px;">${p.description || 'No description'}</p>
+      <img src="${imgSrc}" alt="${p.name}" style="width: 100%; height: 250px; object-fit: cover; border-radius: 4px;" 
+           onerror="this.src='https://placehold.co/250x250/111/FFF?text=No+Image'" />
+      <div class="des">
+        <span>${p.name}</span>
+        <h5>${p.category}</h5>
+        <div class="star">
+          <i class="fas fa-star" style="color:#F59E0B;"></i>
+          <i class="fas fa-star" style="color:#F59E0B;"></i>
+          <i class="fas fa-star" style="color:#F59E0B;"></i>
+          <i class="fas fa-star" style="color:#F59E0B;"></i>
+          <i class="fas fa-star" style="color:#F59E0B;"></i>
         </div>
+        <h4>UGX ${Number(p.price).toLocaleString()}</h4>
       </div>
-      <div class="item-quantity">UGX ${Number(p.price).toLocaleString()}</div>
     `;
     recent.prepend(el);
   }

@@ -111,11 +111,26 @@ async function handleSignup(e) {
             currentUser = user;
             localStorage.setItem('currentUser', JSON.stringify(user));
             updateAuthUI();
-            showAuthNotification('Account created successfully! Welcome to Novuna Electronics.', 'success');
+            showAuthNotification('Account created successfully! Redirecting to login...', 'success');
             
-            // Redirect to home page
+            // Redirect to LOGIN form (not home page)
             setTimeout(() => {
-                window.location.href = 'index.html';
+                // Show login tab and hide signup
+                document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+                const loginForm = document.getElementById('login-form');
+                if (loginForm) {
+                    loginForm.classList.add('active');
+                    // Find and activate the login tab
+                    document.querySelectorAll('[onclick*="showTab"]').forEach(tab => {
+                        if (tab.textContent.includes('Sign In')) {
+                            tab.classList.add('active');
+                        }
+                    });
+                }
+                // Clear signup form
+                document.getElementById('signupForm').reset();
+                showAuthNotification('Please log in with your new credentials', 'info');
             }, 1500);
         } else {
             showAuthNotification('Account creation failed. Please try again.', 'error');
@@ -235,42 +250,56 @@ function showAuthNotification(message, type) {
 function updateAuthUI() {
     // Update navigation based on login status
     const navbar = document.getElementById('navbar');
-    if (navbar) {
-        const authLinks = navbar.querySelector('.auth-links');
-        if (authLinks) {
-            authLinks.remove();
-        }
-        
+    if (!navbar) return;
+
+    // Update account dropdown if present (preferred)
+    const accountMenu = document.getElementById('account-menu');
+    if (accountMenu) {
+        accountMenu.innerHTML = '';
         if (currentUser) {
-            // User is logged in
-            const authLinks = document.createElement('div');
-            authLinks.className = 'auth-links';
-            authLinks.innerHTML = `
-                <li><a href="#" onclick="logout()">Logout</a></li>
-                <li><a href="#" class="user-profile">
-                    <i class="fas fa-user"></i> ${currentUser.firstName}
-                </a></li>
+            accountMenu.innerHTML = `
+                <a href="#" class="dropdown-item" id="account-logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                <a href="#" class="dropdown-item"><i class="fas fa-user"></i> ${currentUser.firstName}</a>
             `;
-            navbar.appendChild(authLinks);
+            // Attach logout handler
+            const logoutEl = document.getElementById('account-logout');
+            if (logoutEl) logoutEl.addEventListener('click', (e) => { e.preventDefault(); logout(); });
         } else {
-            // User is not logged in
-            const authLinks = document.createElement('div');
-            authLinks.className = 'auth-links';
-            authLinks.innerHTML = `
-                <li><a href="login.html">Login</a></li>
-                <li><a href="login.html">Sign Up</a></li>
+            accountMenu.innerHTML = `
+                <a href="login.html" class="dropdown-item"><i class="fas fa-sign-in-alt"></i> Sign In</a>
+                <a href="login.html" class="dropdown-item"><i class="fas fa-user-plus"></i> Create Account</a>
             `;
-            navbar.appendChild(authLinks);
         }
+        return;
     }
+
+    // Fallback: append standalone auth links to navbar
+    const existing = navbar.querySelector('.auth-links');
+    if (existing) existing.remove();
+    const authLinks = document.createElement('div');
+    authLinks.className = 'auth-links';
+    if (currentUser) {
+        authLinks.innerHTML = `
+            <li><a href="#" onclick="logout()">Logout</a></li>
+            <li><a href="#" class="user-profile"><i class="fas fa-user"></i> ${currentUser.firstName}</a></li>
+        `;
+    } else {
+        authLinks.innerHTML = `
+            <li><a href="login.html">Login</a></li>
+            <li><a href="login.html">Sign Up</a></li>
+        `;
+    }
+    navbar.appendChild(authLinks);
 }
 
 // Logout function
 function logout() {
     currentUser = null;
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('cart');  // Clear shopping cart
     updateAuthUI();
-    showAuthNotification('You have been logged out successfully.', 'success');
+    if (typeof updateCartIcon === 'function') updateCartIcon();
+    showAuthNotification('You have been logged out successfully. Your cart has been cleared.', 'success');
     
     // Redirect to home page
     setTimeout(() => {
