@@ -252,6 +252,15 @@ function updateAuthUI() {
     const navbar = document.getElementById('navbar');
     if (!navbar) return;
 
+    // Update logout button visibility in shop.html
+    const logoutBtnShop = document.getElementById('account-logout');
+    if (logoutBtnShop && currentUser) {
+        logoutBtnShop.style.display = 'flex';
+        logoutBtnShop.addEventListener('click', (e) => { e.preventDefault(); logout(); });
+    } else if (logoutBtnShop) {
+        logoutBtnShop.style.display = 'none';
+    }
+
     // Update account dropdown if present (preferred)
     const accountMenu = document.getElementById('account-menu');
     if (accountMenu) {

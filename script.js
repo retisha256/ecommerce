@@ -55,6 +55,66 @@ document.addEventListener('DOMContentLoaded', async () => {
 	// Ensure cart icon on DOM ready
 	if (typeof updateCartIcon === 'function') updateCartIcon();
 
+	// Global delegation for add-to-cart buttons (covers index page static product cards)
+	// This is intentionally lightweight and only builds product data from DOM
+	// if the container doesn't already have a delegated handler (avoids double-calls).
+	document.body.addEventListener('click', function (e) {
+		const btn = e.target.closest && e.target.closest('.cart');
+		if (!btn) return;
+
+		// If a specific pro-container has already attached delegation, skip here
+		const proContainer = btn.closest('.pro-container');
+		if (proContainer && proContainer._cartDelegationAttached) return;
+
+		const productCard = btn.closest('.Pro');
+		if (!productCard) return;
+
+		// Extract product data from the static card markup
+		const nameEl = productCard.querySelector('.des span');
+		const categoryEl = productCard.querySelector('.des h5');
+		const priceEl = productCard.querySelector('.des h4');
+		const imgEl = productCard.querySelector('img');
+
+		const rawPrice = (priceEl && priceEl.textContent) ? priceEl.textContent : '';
+		const numericPrice = parseFloat(String(rawPrice).replace(/[^0-9\.]+/g, '')) || 0;
+
+		const productData = {
+			id: productCard.getAttribute('data-id') || `local-${(nameEl && nameEl.textContent||'').trim().replace(/\s+/g,'-').toLowerCase()}-${Date.now()}`,
+			name: (nameEl && nameEl.textContent) ? nameEl.textContent.trim() : 'Product',
+			category: (categoryEl && categoryEl.textContent) ? categoryEl.textContent.trim() : 'General',
+			price: numericPrice,
+			image: (imgEl && imgEl.getAttribute('src')) ? imgEl.getAttribute('src') : ''
+		};
+
+		if (typeof addToCart === 'function') {
+			addToCart(productData);
+		} else {
+			console.warn('addToCart function not available');
+		}
+	});
+
+	// Setup logout button handler
+	const logoutBtn = document.getElementById('account-logout');
+	if (logoutBtn) {
+		logoutBtn.addEventListener('click', function(e) {
+			e.preventDefault();
+			localStorage.removeItem('currentUser');
+			localStorage.removeItem('cart');
+			// Show logout notification
+			const notification = document.createElement('div');
+			notification.style.cssText = `
+				position: fixed; top: 20px; right: 20px; padding: 15px 20px;
+				border-radius: 8px; background: #10B981; color: white;
+				font-weight: 600; z-index: 10000;
+			`;
+			notification.textContent = 'You have been logged out. Redirecting...';
+			document.body.appendChild(notification);
+			setTimeout(() => {
+				window.location.href = 'login.html';
+			}, 1500);
+		});
+	}
+
 	// Shop page product rendering logic (runs only if the container exists)
 	const container = document.querySelector('#product1 .pro-container');
 	if (container) {
