@@ -7,6 +7,35 @@ document.addEventListener('DOMContentLoaded', function() {
     updateAuthUI();
 });
 
+// Inject notification styles (only once)
+(function injectAuthStyles(){
+    const css = `
+    .auth-notification { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
+    @keyframes slideIn { from { transform: translateY(-8px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+    .auth-notification .checkmark { width:28px; height:28px; flex:0 0 28px; }
+    .auth-notification .msg { line-height:1.1; }
+    .checkmark svg { width:28px; height:28px; }
+    .checkmark .path { stroke-dasharray: 48; stroke-dashoffset: 48; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; fill:none; animation: dash 0.5s ease forwards 0.08s; }
+    @keyframes dash { to { stroke-dashoffset: 0; } }
+    `;
+    const style = document.createElement('style');
+    style.id = 'auth-notification-styles';
+    style.appendChild(document.createTextNode(css));
+    if (!document.getElementById('auth-notification-styles')) document.head.appendChild(style);
+})();
+
+// Ensure a notification container exists (for accessibility)
+document.addEventListener('DOMContentLoaded', function(){
+    if (!document.getElementById('auth-notification-container')){
+        const container = document.createElement('div');
+        container.id = 'auth-notification-container';
+        container.setAttribute('aria-live','polite');
+        container.setAttribute('role','status');
+        container.style.cssText = 'position:fixed; top:16px; right:16px; z-index:10000; display:flex; flex-direction:column; gap:8px;';
+        document.body.appendChild(container);
+    }
+});
+
 // Setup authentication forms
 function setupAuthForms() {
     const loginForm = document.getElementById('loginForm');
@@ -218,32 +247,57 @@ async function simulateSignup(signupData) {
 function showAuthNotification(message, type) {
     const notification = document.createElement('div');
     notification.className = `auth-notification ${type}`;
-    notification.textContent = message;
     notification.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
-        padding: 15px 20px;
-        border-radius: 8px;
+        padding: 12px 16px;
+        border-radius: 10px;
         color: white;
         font-weight: 600;
         z-index: 10000;
-        animation: slideIn 0.3s ease;
-        max-width: 400px;
+        animation: slideIn 0.28s ease;
+        max-width: 420px;
+        display:flex; align-items:center; gap:12px;
     `;
-    
+
+    // Build inner content with optional animated checkmark for success
     if (type === 'success') {
         notification.style.background = 'linear-gradient(135deg, #10B981, #059669)';
+        notification.innerHTML = `
+            <div class="checkmark" aria-hidden>
+              <svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="26" cy="26" r="25" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="2" />
+                <path class="path" fill="none" stroke="#fff" d="M14 27 l8 8 l16 -16" />
+              </svg>
+            </div>
+            <div class="msg">${message}</div>
+        `;
+    } else if (type === 'info') {
+        notification.style.background = 'linear-gradient(135deg, #3B82F6, #2563EB)';
+        notification.innerHTML = `<div class="msg">${message}</div>`;
     } else {
+        // error or default
         notification.style.background = 'linear-gradient(135deg, #EF4444, #DC2626)';
+        notification.innerHTML = `<div class="msg">${message}</div>`;
     }
-    
-    document.body.appendChild(notification);
-    
+
+    // Append into the notification container for aria-live
+    const container = document.getElementById('auth-notification-container') || document.body;
+    // Make notification keyboard-focusable and dismissible
+    notification.tabIndex = 0;
+    notification.setAttribute('role','alert');
+    notification.style.cursor = 'pointer';
+    const removeNotification = () => { if (notification && notification.parentNode) notification.parentNode.removeChild(notification); };
+    notification.addEventListener('click', removeNotification);
+    notification.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') removeNotification(); });
+
+    container.appendChild(notification);
+
     // Remove notification after 4 seconds
-    setTimeout(() => {
-        notification.remove();
-    }, 4000);
+    const timeoutId = setTimeout(() => { removeNotification(); }, 4000);
+    // Clear timeout if removed manually
+    notification.addEventListener('remove', () => clearTimeout(timeoutId));
 }
 
 // Update authentication UI
