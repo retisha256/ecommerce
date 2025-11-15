@@ -103,6 +103,7 @@
 <body>
  
 
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <section id="auth-section">
     <div class="auth-container">
       <div class="auth-left"></div>
@@ -129,14 +130,18 @@
                 <input type="checkbox" id="rememberMe">
                 Remember me
               </label>
-              <a href="#" class="forgot-password">Forgot Password?</a>
+              <a href="reset-password.html" class="forgot-password" style="color: #088178; text-decoration: none;">Forgot Password?</a>
             </div>
             <button type="submit" class="auth-btn">Sign In</button>
           </form>
           <div class="auth-divider">or continue with</div>
           <div class="social-login">
-            <button class="social-btn google-btn"><i class="fab fa-google"></i> Google</button>
-            <button class="social-btn facebook-btn"><i class="fab fa-facebook-f"></i> Facebook</button>
+            <div id="g_id_onload"
+                 data-client_id="1057183639332-qtg7v1q5trgu59rprcgm2om87tgjnr1k.apps.googleusercontent.com"
+                 data-callback="handleCredentialResponse"
+                 data-auto_prompt="false">
+            </div>
+            <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with" data-shape="rect" data-logo_alignment="left"></div>
           </div>
         </div>
 
@@ -171,7 +176,7 @@
             <div class="form-options">
               <label class="checkbox-container">
                 <input type="checkbox" id="agreeTerms" required>
-                I agree to the <a href="#" class="terms-link">Terms & Conditions</a> and <a href="#" class="terms-link">Privacy Policy</a>
+                I agree to the <a href="terms.html" class="terms-link" style="color: #088178;">Terms & Conditions</a> and <a href="#" class="terms-link" style="color: #088178;">Privacy Policy</a>
               </label>
             </div>
             <button type="submit" class="auth-btn">Create Account</button>
@@ -187,21 +192,55 @@
   <script>
     // Clear previous user data on page load
     document.addEventListener('DOMContentLoaded', function() {
-        // Clear all form fields to show fresh page
-        const loginForm = document.getElementById('loginForm');
-        const signupForm = document.getElementById('signupForm');
-        if (loginForm) loginForm.reset();
-        if (signupForm) signupForm.reset();
-        // Uncheck remember me
-        const rememberMe = document.getElementById('rememberMe');
-        if (rememberMe) rememberMe.checked = false;
+      // Clear all form fields to show fresh page
+      const loginForm = document.getElementById('loginForm');
+      const signupForm = document.getElementById('signupForm');
+      if (loginForm) loginForm.reset();
+      if (signupForm) signupForm.reset();
+      // Uncheck remember me
+      const rememberMe = document.getElementById('rememberMe');
+      if (rememberMe) rememberMe.checked = false;
     });
-    
+
     function showTab(tab) {
       document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
       document.querySelector(`[onclick="showTab('${tab}')"]`).classList.add('active');
       document.getElementById(`${tab}-form`).classList.add('active');
+    }
+
+    // Google Sign-In callback
+    function handleCredentialResponse(response) {
+      // Send response.credential to backend for verification
+      fetch('/api/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: response.credential })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          // Store user info, update UI, redirect
+          localStorage.setItem('currentUser', JSON.stringify(data.user));
+          if (typeof updateAuthUI === 'function') updateAuthUI();
+          const notification = document.createElement('div');
+          notification.style.cssText = `
+            position: fixed; top: 20px; right: 20px; padding: 15px 20px;
+            border-radius: 8px; background: #10B981; color: white;
+            font-weight: 600; z-index: 10000;
+          `;
+          notification.textContent = 'Google login successful! Redirecting...';
+          document.body.appendChild(notification);
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 1500);
+        } else {
+          alert('Google login failed: ' + (data.message || 'Unknown error'));
+        }
+      })
+      .catch(err => {
+        alert('Google login error: ' + err.message);
+      });
     }
   </script>
 </body>

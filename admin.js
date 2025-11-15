@@ -116,9 +116,12 @@ document.addEventListener('DOMContentLoaded', () => {
     el.style.cssText = 'margin: 10px; cursor: pointer;';
     
     // Create image element with fallback
-    const imgSrc = p.image && (p.image.startsWith('blob:') || p.image.startsWith('data:') || p.image.startsWith('http')) 
-      ? p.image 
-      : 'img1.png';
+    const imgSrc = p.image && (
+      p.image.startsWith('blob:') ||
+      p.image.startsWith('data:') ||
+      p.image.startsWith('http') ||
+      p.image.startsWith('/')
+    ) ? p.image : 'img1.png';
     
     el.innerHTML = `
       <img src="${imgSrc}" alt="${p.name}" style="width: 100%; height: 250px; object-fit: cover; border-radius: 4px;" 

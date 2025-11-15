@@ -66,7 +66,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 		let apiProducts = [];
 		try {
 			if (typeof api !== 'undefined' && api.getProducts) {
-				const res = await api.getProducts({ limit: 100 });
+				// If we're on a search results page, ask the API to filter by query
+				const params = { limit: 100 };
+				if (searchQuery) params.q = searchQuery;
+				const res = await api.getProducts(params);
 				apiProducts = Array.isArray(res?.data) ? res.data : [];
 			}
 		} catch (e) {
@@ -92,6 +95,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 			image: p.image || 'img1.png',
 			description: p.description || ''
 		}));
+		console.log('shop: merged products - API:', apiProducts.length, '+ Local:', localProducts.length, '= Total:', merged.length);
 
 		// Apply search filter if on search results page
 		if (searchQuery) {
@@ -193,7 +197,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 		};
 
 		// Initial render
+		console.log('shop: renderProducts called with', merged.length, 'products');
 		renderProducts(merged);
+		console.log('shop: initial render complete');
 
 		// Watch for unexpected clears (helps prevent other scripts from wiping products)
 		let mutationObserverActive = false;
@@ -284,6 +290,48 @@ document.addEventListener('DOMContentLoaded', async () => {
 		searchInput.addEventListener('keypress', function (e) {
 			if (e.key === 'Enter') {
 				performSearch(searchInput.value);
+			}
+		});
+	}
+
+	// Newsletter subscription
+	const newsletterBtn = document.getElementById('newsletter-btn');
+	const newsletterEmail = document.getElementById('newsletter-email');
+
+	if (newsletterBtn && newsletterEmail) {
+		newsletterBtn.addEventListener('click', async function (e) {
+			e.preventDefault();
+			const email = newsletterEmail.value.trim();
+
+			if (!email || !email.includes('@')) {
+				showAuthNotification('Please enter a valid email address', 'error');
+				return;
+			}
+
+			newsletterBtn.disabled = true;
+			newsletterBtn.textContent = 'Subscribing...';
+
+			try {
+				const response = await fetch('/api/subscribe', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ email })
+				});
+
+				const data = await response.json();
+
+				if (data.success) {
+					showAuthNotification('🎉 You have successfully subscribed to our newsletter!', 'success');
+					newsletterEmail.value = '';
+				} else {
+					showAuthNotification('Subscription failed: ' + data.message, 'error');
+				}
+			} catch (err) {
+				console.error('Newsletter subscription error:', err);
+				showAuthNotification('An error occurred. Please try again.', 'error');
+			} finally {
+				newsletterBtn.disabled = false;
+				newsletterBtn.textContent = 'Sign Up';
 			}
 		});
 	}

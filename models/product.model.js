@@ -38,11 +38,22 @@ const productSchema = mongoose.Schema(
         // Mongoose automatically adds timestamps (createdAt, updatedAt)
     },
     {
-        timestamps: true, 
+        timestamps: true,
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true }
     }
 );
 
 // Create the model using the schema
-const Product = mongoose.model('Product', productSchema);
+// Provide a virtual `image` property that maps to `imageUrl` for frontend compatibility
+if (!productSchema.virtuals || !productSchema.virtuals.image) {
+    productSchema.virtual('image')
+        .get(function () { return this.imageUrl; })
+        .set(function (v) { this.imageUrl = v; });
+}
+
+// Create the model using the schema
+// Avoid OverwriteModelError in environments that may load this file twice
+const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
 
 module.exports = Product;
