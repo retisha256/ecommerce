@@ -31,10 +31,14 @@
       display: flex; width: 100%; max-width: 1000px; background: #fff; border-radius: 12px;
       overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.1);
     }
-    .auth-left {
-      flex: 1; background: url('img4.png') center/cover no-repeat;
-      display: none; /* show on desktop only */
-    }
+  .auth-left {
+  flex: 1;
+  background-image: url('img4.png'), linear-gradient(135deg, #6B46C1, #F59E0B);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 200px 150px, cover;
+  display: none; /* show on desktop only */
+}
     .auth-right {
       flex: 1; padding: 40px; display: flex; flex-direction: column; justify-content: center;
     }
@@ -47,7 +51,7 @@
       font-weight: bold; color: #555;
       transition: all 0.3s;
     }
-    .auth-tab.active { border-color: #088178; color: #088178; }
+    .auth-tab.active { border-color:  #F59E0B; color: purple; }
 
     /* --- Forms --- */
     .auth-form { display: none; flex-direction: column; gap: 20px; }
@@ -69,10 +73,11 @@
     .form-options { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
     .checkbox-container { display: flex; align-items: center; gap: 5px; cursor: pointer; }
     .auth-btn {
-      background: #088178; color: #fff; border: none; padding: 12px; border-radius: 8px;
+    box-shadow: 0 12px 35px rgba(107, 70, 193, 0.6);
+   background: linear-gradient(135deg, #6B46C1, #F59E0B);
       cursor: pointer; font-weight: bold; transition: all 0.3s;
     }
-    .auth-btn:hover { background: #066658; }
+    
 
     .auth-divider { text-align: center; font-size: 14px; color: #888; margin: 15px 0; position: relative; }
     .auth-divider::before, .auth-divider::after {
@@ -86,9 +91,9 @@
       flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ccc; display: flex; align-items: center;
       justify-content: center; gap: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s;
     }
-    .social-btn.google-btn { background: #fff; color: #555; }
-    .social-btn.facebook-btn { background: #1877f2; color: #fff; border: none; }
-    .social-btn:hover { opacity: 0.9; }
+    .social-btn.google-btn { background: linear-gradient(135deg, #6B46C1, #F59E0B) ; color: purple; }
+    
+    .social-btn:hover { opacity: 0.9;  }
 
     /* --- Responsive --- */
     @media (min-width: 900px) {
@@ -176,7 +181,7 @@
             <div class="form-options">
               <label class="checkbox-container">
                 <input type="checkbox" id="agreeTerms" required>
-                I agree to the <a href="terms.html" class="terms-link" style="color: #088178;">Terms & Conditions</a> and <a href="#" class="terms-link" style="color: #088178;">Privacy Policy</a>
+                I agree to the <a href="terms.html" class="terms-link" style="color: purple;">Terms & Conditions</a> and <a href="#" class="terms-link" style="color: yellow;">Privacy Policy</a>
               </label>
             </div>
             <button type="submit" class="auth-btn">Create Account</button>

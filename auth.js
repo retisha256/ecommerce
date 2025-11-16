@@ -261,24 +261,27 @@ function showAuthNotification(message, type) {
         display:flex; align-items:center; gap:12px;
     `;
 
-    // Build inner content with optional animated checkmark for success
+    // Use site palette for success/error/info
     if (type === 'success') {
-        notification.style.background = 'linear-gradient(135deg, #10B981, #059669)';
+        notification.style.background = 'linear-gradient(90deg, #ffd400, #f7b801)';
+        notification.style.color = '#2b0b4a';
         notification.innerHTML = `
             <div class="checkmark" aria-hidden>
               <svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="26" cy="26" r="25" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="2" />
-                <path class="path" fill="none" stroke="#fff" d="M14 27 l8 8 l16 -16" />
+                <circle cx="26" cy="26" r="25" fill="none" stroke="rgba(43,11,74,0.12)" stroke-width="2" />
+                <path class="path" fill="none" stroke="#2b0b4a" d="M14 27 l8 8 l16 -16" />
               </svg>
             </div>
             <div class="msg">${message}</div>
         `;
     } else if (type === 'info') {
-        notification.style.background = 'linear-gradient(135deg, #3B82F6, #2563EB)';
+        notification.style.background = 'linear-gradient(90deg, #a084e8, #f7b801)';
+        notification.style.color = '#2b0b4a';
         notification.innerHTML = `<div class="msg">${message}</div>`;
     } else {
         // error or default
-        notification.style.background = 'linear-gradient(135deg, #EF4444, #DC2626)';
+        notification.style.background = 'linear-gradient(90deg, #2b0b4a, #a084e8)';
+        notification.style.color = '#ffd400';
         notification.innerHTML = `<div class="msg">${message}</div>`;
     }
 

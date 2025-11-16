@@ -270,7 +270,7 @@ body {
 
 .dropdown-item:hover {
     background: #f8f9fa;
-    color: #088178;
+    color: purple;
     padding-left: 25px;
 }
 
@@ -318,7 +318,7 @@ body {
 }
 
 #mobile-search-input:focus {
-    border-color: #088178;
+    border-color: #F59E0B;
 }
 
 #mobile-search-btn {
