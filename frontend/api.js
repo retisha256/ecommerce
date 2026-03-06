@@ -1,15 +1,32 @@
 // API Service for Novuna Electronics
-const API_BASE_URL = `http://${window.location.hostname || 'localhost'}:${window.location.port || '5003'}/api`;
+
+// Determine the base URL - works in both development and production
+const getBaseUrl = () => {
+    // Check if we're running on Render (production)
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        // In production, use the same hostname but ensure we're using the API path
+        return `${window.location.protocol}//${window.location.hostname}/api`;
+    }
+    // In development, use localhost with port 5003
+    return 'http://localhost:5003/api';
+};
+
+const API_BASE_URL = getBaseUrl();
+console.log('API Base URL:', API_BASE_URL); // For debugging
 
 class ApiService {
     // Generic API call method
     async makeRequest(endpoint, options = {}) {
         const url = `${API_BASE_URL}${endpoint}`;
+        console.log('Making request to:', url); // For debugging
+        
         const isFormData = (typeof FormData !== 'undefined') && options && options.body instanceof FormData;
         const headers = { ...(options && options.headers ? options.headers : {}) };
+        
         if (!isFormData) {
             headers['Content-Type'] = headers['Content-Type'] || 'application/json';
         }
+        
         const config = {
             headers,
             ...options
@@ -17,7 +34,10 @@ class ApiService {
 
         try {
             const response = await fetch(url, config);
-            const data = await response.json();
+            
+            // Check if response is empty
+            const text = await response.text();
+            const data = text ? JSON.parse(text) : {};
             
             if (!response.ok) {
                 throw new Error(data.message || 'API request failed');
@@ -123,6 +143,7 @@ if (typeof module !== 'undefined' && module.exports) {
     window.api = api;
 }
 
+// Cart functionality (keeping your existing cart code)
 document.addEventListener('DOMContentLoaded', function() {
     cart = JSON.parse(localStorage.getItem('cart')) || [];
     updateCartDisplay();
@@ -143,6 +164,5 @@ window.addEventListener('storage', function(e) {
 });
 
 function updateCartDisplay() {
-    // Reload cart from localStorage to ensure we have the latest data
     cart = JSON.parse(localStorage.getItem('cart')) || [];
 }

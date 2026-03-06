@@ -5,21 +5,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
-require('dotenv').config();  // ✅ Load .env FIRST
-
-// === DEBUG: Check env vars immediately after loading ===
-console.log('========== ENV VAR DEBUG ==========');
-console.log('1. MONGODB_URI exists:', !!process.env.MONGODB_URI);
-console.log('2. MONGODB_URI type:', typeof process.env.MONGODB_URI);
-console.log('3. MONGODB_URI length:', process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0);
-console.log('4. Raw value (JSON.stringify):', JSON.stringify(process.env.MONGODB_URI));
-console.log('5. First 20 characters:', process.env.MONGODB_URI ? process.env.MONGODB_URI.substring(0, 20) : 'N/A');
-console.log('6. Character codes for first 15 chars:');
-const uri = process.env.MONGODB_URI || '';
-for (let i = 0; i < Math.min(15, uri.length); i++) {
-    console.log(`   char ${i}: '${uri[i]}' (code: ${uri.charCodeAt(i)})`);
-}
-console.log('====================================');
+require('dotenv').config();
 
 const app = express();
 let PORT = process.env.PORT || 5003;
@@ -70,8 +56,12 @@ const upload = multer({
 });
 
 // MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/novuna-electronics';
-console.log('Attempting to connect with URI starting with:', MONGODB_URI ? MONGODB_URI.substring(0, 20) : 'UNDEFINED');
+let MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/novuna-electronics';
+
+// Sanitize: Remove potential quotes if copied from .env or entered incorrectly in dashboard
+if (typeof MONGODB_URI === 'string') {
+    MONGODB_URI = MONGODB_URI.trim().replace(/^['"]|['"]$/g, '');
+}
 
 mongoose.connect(MONGODB_URI, {
     useNewUrlParser: true,
