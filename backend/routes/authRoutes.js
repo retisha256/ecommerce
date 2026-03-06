@@ -64,6 +64,7 @@ router.post('/auth/google', async (req, res) => {
             isLoggedIn: true
         };
 
+        console.log(`✅ Google Login successful for: ${user.email}`);
         res.json({
             success: true,
             user: userData,
@@ -71,10 +72,10 @@ router.post('/auth/google', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Google auth error:', error);
+        console.error('❌ Google auth error:', error.message);
         res.status(500).json({
             success: false,
-            message: 'Authentication failed'
+            message: 'Authentication failed: ' + error.message
         });
     }
 });

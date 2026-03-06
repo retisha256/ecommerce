@@ -16,7 +16,7 @@ const userSchema = mongoose.Schema(
         },
         lastName: {
             type: String,
-            required: true,
+            required: false,
             trim: true,
         },
         phone: {
@@ -51,7 +51,7 @@ const userSchema = mongoose.Schema(
 );
 
 // Virtual for full name
-userSchema.virtual('fullName').get(function() {
+userSchema.virtual('fullName').get(function () {
     return `${this.firstName} ${this.lastName}`;
 });
 

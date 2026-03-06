@@ -2040,6 +2040,8 @@ body {
   .footer-container {
     flex-direction: column;
     gap: 25px;
+    align-items: flex-start;
+    text-align: left;
   }
 }
 
@@ -2484,6 +2486,7 @@ body {
   .footer-container {
     flex-direction: column;
     align-items: flex-start;
+    text-align: left;
   }
 }
 

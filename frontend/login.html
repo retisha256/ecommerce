@@ -386,15 +386,12 @@
       document.getElementById(`${tab}-form`).classList.add('active');
     }
 
-    // Google Sign-In callback
     function handleCredentialResponse(response) {
       // Send response.credential to backend for verification
-      fetch('/api/auth/google', {
+      api.makeRequest('/auth/google', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: response.credential })
       })
-        .then(res => res.json())
         .then(data => {
           if (data.success) {
             // Store user info, update UI, redirect

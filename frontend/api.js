@@ -3,30 +3,34 @@
 // Determine the base URL - works in both development and production
 const getBaseUrl = () => {
     // Check if we're running on Render (production)
+    // In production (Render), use the current host
     if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-        // In production, use the same hostname but ensure we're using the API path
         return `${window.location.protocol}//${window.location.hostname}/api`;
     }
-    // In development, use localhost with port 5003
-    return 'http://localhost:5003/api';
+    // In development, detect the port automatically (e.g. 5003 or 5004)
+    const port = window.location.port || '5003';
+    return `http://localhost:${port}/api`;
 };
 
 const API_BASE_URL = getBaseUrl();
 console.log('API Base URL:', API_BASE_URL); // For debugging
 
 class ApiService {
+    constructor() {
+        this.API_BASE_URL = API_BASE_URL;
+    }
     // Generic API call method
     async makeRequest(endpoint, options = {}) {
         const url = `${API_BASE_URL}${endpoint}`;
         console.log('Making request to:', url); // For debugging
-        
+
         const isFormData = (typeof FormData !== 'undefined') && options && options.body instanceof FormData;
         const headers = { ...(options && options.headers ? options.headers : {}) };
-        
+
         if (!isFormData) {
             headers['Content-Type'] = headers['Content-Type'] || 'application/json';
         }
-        
+
         const config = {
             headers,
             ...options
@@ -34,15 +38,15 @@ class ApiService {
 
         try {
             const response = await fetch(url, config);
-            
+
             // Check if response is empty
             const text = await response.text();
             const data = text ? JSON.parse(text) : {};
-            
+
             if (!response.ok) {
                 throw new Error(data.message || 'API request failed');
             }
-            
+
             return data;
         } catch (error) {
             console.error('API Error:', error);
@@ -144,19 +148,19 @@ if (typeof module !== 'undefined' && module.exports) {
 }
 
 // Cart functionality (keeping your existing cart code)
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     cart = JSON.parse(localStorage.getItem('cart')) || [];
     updateCartDisplay();
 });
 
-document.addEventListener('visibilitychange', function() {
+document.addEventListener('visibilitychange', function () {
     if (!document.hidden) {
         cart = JSON.parse(localStorage.getItem('cart')) || [];
         updateCartDisplay();
     }
 });
 
-window.addEventListener('storage', function(e) {
+window.addEventListener('storage', function (e) {
     if (e.key === 'cart') {
         cart = JSON.parse(e.newValue || '[]');
         updateCartDisplay();

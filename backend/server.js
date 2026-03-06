@@ -67,8 +67,8 @@ mongoose.connect(MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
-    .then(() => console.log('✅ MongoDB connected successfully'))
-    .catch(err => console.error('❌ MongoDB connection error:', err));
+    .then(() => console.log(' MongoDB connected successfully'))
+    .catch(err => console.error('MongoDB connection error:', err));
 
 // Use centralized router for API (products, orders, payments)
 const productRoutes = require('./routes/productRoutes');
