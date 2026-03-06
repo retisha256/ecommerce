@@ -193,8 +193,8 @@ async function processOrder(orderData) {
         showMobileMoneyInstructions(paymentData, orderData);
 
     } catch (error) {
-        console.error('Error processing order:', error);
-        alert('Error processing order. Please try again.');
+        console.error('Detailed error processing order:', error);
+        alert(`Error processing order: ${error.message}. Please try again.`);
     } finally {
         // Reset button
         submitButton.textContent = originalText;
@@ -211,7 +211,7 @@ function generateMobileMoneyPayment(orderData) {
         orderId: orderId,
         amount: totalAmount,
         phone: orderData.customer.phone,
-        paymentMethod: orderData.payment,
+        paymentMethod: orderData.paymentMethod, // Fixed: was orderData.payment
         timestamp: new Date().toISOString()
     };
 }
@@ -323,8 +323,8 @@ function showOrderSuccess(orderData) {
             </div>
             <h2>Order Placed Successfully!</h2>
             <p>Thank you for your order, ${orderData.customer.firstName}!</p>
-            <p>Order Total: ${orderData.total.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
-            <p>Payment Method: ${orderData.payment.toUpperCase()}</p>
+            <p>Order Total: UGX ${orderData.total.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+            <p>Payment Method: ${(orderData.paymentMethod || 'Mobile Money').toUpperCase()}</p>
             <p>We'll send you a confirmation email shortly.</p>
             <div class="success-actions">
                 <a href="index.html" class="normal">Continue Shopping</a>
