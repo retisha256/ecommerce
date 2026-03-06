@@ -1,8 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Determine API Base URL for Chatbot
-    const apiUrl = typeof window.api !== 'undefined' && window.api.API_BASE_URL
-        ? window.api.API_BASE_URL
-        : `http://${window.location.hostname || 'localhost'}:5003/api`;
+    // Determine API Base URL for Chatbot - FIXED VERSION
+    const apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:5003/api'  // Development
+        : '/api';  // Production (relative path works because backend serves frontend)
+
+    console.log('🔍 Chatbot API URL:', apiUrl); // For debugging
 
     // Inject CSS programmatically if not linked in head (failsafe)
     if (!document.querySelector('link[href*="chatbot.css"]')) {
@@ -93,6 +95,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 localProducts = JSON.parse(localStorage.getItem('adminProducts') || '[]');
             } catch (err) { }
 
+            console.log('Sending to:', `${apiUrl}/chatbot`); // Debug log
+
             const response = await fetch(`${apiUrl}/chatbot`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -106,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 appendMessage("I'm sorry, I encountered an error answering that.", 'bot');
             }
         } catch (error) {
-            console.error("Chatbot API error:", error);
+            console.error("❌ Chatbot API error:", error);
             appendMessage("I couldn't reach the server. Please try again later.", 'bot');
         }
     };
