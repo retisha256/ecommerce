@@ -97,3 +97,13 @@ server.on('error', (err) => {
         console.error('Server error:', err);
     }
 });
+// Add these debug lines
+console.log('=== ENV VAR DEBUG ===');
+console.log('MONGODB_URI exists:', !!process.env.MONGODB_URI);
+console.log('MONGODB_URI value length:', process.env.MONGODB_URI ? process.env.MONGODB_URI.length : 0);
+console.log('MONGODB_URI starts with:', process.env.MONGODB_URI ? process.env.MONGODB_URI.substring(0, 15) : 'N/A');
+console.log('=====================');
+
+// Your existing connection line
+mongoose.connect(process.env.MONGODB_URI)
+// ... rest of your code
