@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop - Novuna Electronics</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .cart-btn {
+            background: linear-gradient(135deg, #6B46C1, #F59E0B);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            color: white;
+            padding: 8px 6px;
+            border-radius: 25px;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(107, 70, 193, 0.3);
+        }
+
+        .cart-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(107, 70, 193, 0.45);
+            background: linear-gradient(135deg, #8B5CF6, #F59E0B);
+        }
+
+        .cart-btn i {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <section id="header">
+        <a href="index.html"><img src="img4.png" class="logo" alt="Novuna Electronics"></a>
+        <div>
+            <ul id="navbar">
+
+
+                <li id="search-container">
+
+                    <div class="search-box">
+
+                        <input type="text" id="search-input" placeholder="Search products...">
+
+                        <button id="search-btn"><i class="fas fa-search"></i></button>
+
+                    </div>
+
+                </li>
+                <li><a class="active" href="shop.html">Shop</a></li>
+                <li><a href="cart.html"><i class="fas fa-shopping-cart"></i> Cart</a></li>
+
+
+                <!-- Account Dropdown -->
+
+                <li class="account-dropdown">
+
+                    <a href="#" id="account-toggle">
+
+                        <i class="fas fa-user"></i>Account
+
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+
+                    </a>
+
+                    <div class="dropdown-menu" id="account-menu">
+
+                        <a href="login.html" class="dropdown-item">
+
+                            <i class="fas fa-sign-in-alt"></i> Sign In
+
+                        </a>
+
+                        <a href="login.html" class="dropdown-item">
+
+                            <i class="fas fa-user-plus"></i> Create Account
+
+                        </a>
+
+                        <a href="#" class="dropdown-item" id="account-logout" style="display: none;">
+
+                            <i class="fas fa-sign-out-alt"></i> Logout
+
+                        </a>
+
+                    </div>
+
+                </li>
+
+                <li><a href="#" id="close"><i class="fa fa-times" aria-hidden="true"></i></a></li>
+            </ul>
+        </div>
+        <div id="mobile">
+            <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a>
+            <i id="bar" class="fas fa-outdent"></i>
+        </div>
+    </section>
+
+    <section id="page-header" class="section-p1">
+        <h2>#Shop</h2>
+        <p>Save more with coupons & up to 70% off!</p>
+    </section>
+
+    <section id="product1" class="section-p1">
+        <!-- Products are loaded dynamically from the API and local storage by script.js -->
+        <div class="pro-container">
+        </div>
+    </section>
+
+    <section id="newsletter" class="section-p1 section-m1">
+        <div class="newstext">
+            <h4>Sign Up For Newsletters</h4>
+            <p>Get E-mail updates about our latest shop and <span>special offers.</span></p>
+        </div>
+
+        <div class="form">
+            <input type="text" id="newsletter-email" placeholder="Your email address">
+            <br><br>
+            <button class="normal" id="newsletter-btn">Sign Up</button>
+        </div>
+    </section>
+
+    <footer id="contact" class="section-p1">
+        <div class="footer-container">
+            <div class="footer-col">
+                <h3>INFORMATION</h3>
+                <ul>
+                    <li><a href="#">About us</a></li>
+                    <li><a href="#">Delivery Information</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>ACCOUNT</h3>
+                <ul>
+                    <li><a href="#">My Account</a></li>
+                    <li><a href="#">Order History</a></li>
+                    <li><a href="wishlist.html">Wishlist</a></li>
+                    <li><a href="#">Newsletter</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>CONTACT US</h3>
+                <p><strong>Address:</strong> Kampala, Uganda</p>
+                <p><strong>Phone:</strong> +256 754 030391</p>
+                <p><strong>Email:</strong>customerservice.novuna@gmail.com</p>
+                <div class="socials">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating WhatsApp -->
+        <a href="https://wa.me/256754030391" class="whatsapp-float" target="_blank" aria-label="Chat on WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+        <p class="footer-bottom">© 2025 Novuna electronics. All rights reserved.</p>
+    </footer>
+
+    <script src="api.js"></script>
+    <script src="cart.js"></script>
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+    <script src="chatbot.js"></script>
+</body>
+
+</html>

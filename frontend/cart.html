@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - Novuna Electronics</title>
+    <!-- Note: You should combine style.css and this HTML into one file if this were the final output, but I'm keeping it split for now based on your files. -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Add basic cart page styling to ensure readability on dark background */
+        #cart {
+            overflow-x: auto;
+            padding-bottom: 50px;
+        }
+
+        #cart table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: auto;
+            color: #fff;
+            /* Ensure text color is visible */
+        }
+
+        #cart table thead {
+            border-bottom: 2px solid #6B46C1;
+        }
+
+        #cart table thead td {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 13px;
+            padding: 18px 0;
+            text-align: center;
+        }
+
+        #cart table tbody tr td {
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            vertical-align: middle;
+            color: #ccc;
+        }
+
+        #cart table tbody tr td a {
+            color: #F59E0B;
+            font-size: 18px;
+        }
+
+        #cart-add {
+            display: flex;
+            justify-content: flex-end;
+            padding-top: 50px;
+        }
+
+        #subtotal {
+            width: 50%;
+            padding: 30px;
+
+
+            color: #333;
+        }
+
+        #subtotal table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+            background-color: #fff;
+            display: table;
+        }
+
+        #subtotal table tr {
+            display: table-row;
+        }
+
+        #subtotal table td {
+            padding: 10px 0;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #000;
+            font-size: 16px;
+            display: table-cell;
+        }
+
+        #subtotal table tr:last-child td {
+            font-size: 18px;
+            font-weight: 700;
+            color: #F59E0B;
+        }
+
+        /* Style for the input field to make it dark mode friendly */
+        #cart table input[type="number"] {
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #6B46C1;
+        }
+
+        .cart-layout {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .cart-layout>table {
+            flex: 1 1 auto;
+            min-width: 60%;
+        }
+
+        .cart-layout>#subtotal {
+            flex: 0 1 35%;
+            min-width: 250px;
+        }
+
+        @media (max-width: 768px) {
+            .cart-layout {
+                flex-direction: column;
+            }
+
+            #cart table {
+                overflow-x: auto;
+                display: block;
+                white-space: nowrap;
+                width: 100%;
+            }
+
+            #subtotal {
+                width: 100%;
+                margin-top: 30px;
+            }
+
+            #subtotal table {
+                display: table;
+                border-collapse: collapse;
+            }
+
+            #subtotal table tr {
+                display: table-row;
+            }
+
+            #subtotal table td {
+                display: table-cell;
+            }
+
+            /* Add spacing between the two tables on mobile */
+            .cart-layout>table {
+                margin-bottom: 30px;
+            }
+        }
+
+        /* Recommended products container - carousel style */
+        #recommended .pro-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding: 10px 0;
+            scrollbar-width: thin;
+            scrollbar-color: #088178 #f1f1f1;
+        }
+
+        #recommended .pro-container::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        #recommended .pro-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        #recommended .pro-container::-webkit-scrollbar-thumb {
+            background: #088178;
+            border-radius: 3px;
+        }
+
+        /* Recommended products styling to match shop page products */
+        #recommended .Pro {
+            background: #fff;
+            padding: 13px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 20px 20px 30px rgba(0, 0, 0, 0.02);
+            margin: 15px 0;
+            transition: 0.2s ease;
+            position: relative;
+            flex-shrink: 0;
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        #recommended .Pro:hover {
+            transform: translateY(-6px);
+        }
+
+        #recommended .Pro img {
+            width: 100%;
+            border-radius: 20px;
+        }
+
+        #recommended .Pro:hover img {
+            transform: scale(1.03);
+        }
+
+        #recommended .Pro .des {
+            padding: 6px 0;
+            text-align: center;
+            flex: 1 1 auto;
+        }
+
+        #recommended .Pro .des span {
+            color: #64748b;
+            /* slate-500 */
+            font-size: 12px;
+        }
+
+        #recommended .Pro .des h5 {
+            margin: 6px 0;
+            font-size: 14px;
+        }
+
+        #recommended .Pro .des .star i {
+            font-size: 12px;
+        }
+
+        #recommended .Pro .des h4 {
+            margin-top: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #088178;
+        }
+
+        #recommended .Pro .cart-btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 16px;
+            border-radius: 25px;
+            background-color: #088178;
+            font-weight: 500;
+            color: #fff;
+            border: 1px solid #088178;
+            cursor: pointer;
+            transition: 0.3s ease;
+            font-size: 14px;
+        }
+
+        #recommended .Pro .cart-btn:hover {
+            background-color: #e8f6ea;
+            color: #088178;
+            transform: scale(1.05);
+        }
+
+        #recommended .Pro .cart-btn i {
+            margin-right: 8px;
+        }
+
+        /* Galaxy S8 and small mobile devices */
+        @media (max-width: 414px) {
+
+            /* Adjust header for mobile */
+            #header {
+                padding: 10px 15px;
+            }
+
+            #mobile {
+                display: flex;
+                align-items: center;
+            }
+
+            #mobile a {
+                font-size: 18px;
+                margin-right: 15px;
+            }
+
+            /* Cart table adjustments for very small screens */
+            #cart {
+                padding: 10px;
+                overflow-x: auto;
+            }
+
+            .cart-layout {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                width: 100%;
+            }
+
+            .cart-layout>table {
+                width: 100%;
+            }
+
+            .cart-layout>#subtotal {
+                width: 100%;
+                display: block;
+            }
+
+            #cart table {
+                min-width: 700px;
+                /* Allow horizontal scrolling on tiny screens */
+                font-size: 12px;
+            }
+
+            #cart table thead td {
+                font-size: 11px;
+                padding: 12px 5px;
+            }
+
+            #cart table tbody tr td {
+                padding: 10px 5px;
+                font-size: 12px;
+            }
+
+            /* Hide all image and remove columns on mobile (columns 1 and 2) */
+            #cart table thead tr td:nth-child(1),
+            #cart table thead tr td:nth-child(2),
+            #cart table tbody tr td:nth-child(1),
+            #cart table tbody tr td:nth-child(2) {
+                display: none;
+            }
+
+            /* Make product name column wider */
+            #cart table tbody tr td:nth-child(3) {
+                min-width: 100px;
+                text-align: left;
+            }
+
+            /* Adjust quantity input for touch */
+            #cart table input[type="number"] {
+                width: 50px;
+                height: 30px;
+                font-size: 14px;
+                padding: 0 5px;
+            }
+
+            /* Subtotal section */
+            #subtotal {
+                width: 100%;
+                padding: 20px;
+                margin-top: 20px;
+                background: linear-gradient(135deg, rgba(107, 70, 193, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%);
+                border-radius: 8px;
+            }
+
+            #subtotal h3 {
+                font-size: 18px;
+                margin-bottom: 15px;
+                color: #F59E0B;
+                font-weight: 600;
+            }
+
+            #subtotal table {
+                width: 100%;
+                margin-bottom: 15px;
+                display: table;
+                border-collapse: collapse;
+            }
+
+            #subtotal table tr {
+                display: table-row;
+            }
+
+            #subtotal table td {
+                padding: 10px 5px;
+                font-size: 14px;
+                color: #000;
+                display: table-cell;
+            }
+
+            #subtotal table td:first-child {
+                text-align: left;
+            }
+
+            #subtotal table td:last-child {
+                text-align: right;
+                font-weight: 600;
+                color: #000;
+            }
+
+            #subtotal table tr:last-child td {
+                font-size: 16px;
+                color: #F59E0B;
+                border-top: 2px solid #6B46C1;
+                padding-top: 12px;
+            }
+
+            .normal {
+                width: 100%;
+                padding: 12px;
+                font-size: 14px;
+            }
+
+            /* Recommended products */
+            #recommended {
+                padding: 10px;
+            }
+
+            #recommended h2 {
+                font-size: 18px;
+                margin-bottom: 15px;
+            }
+
+            #recommended .Pro {
+                width: 200px;
+                padding: 10px;
+            }
+
+            #recommended .Pro .des h5 {
+                font-size: 12px;
+            }
+
+            #recommended .Pro .des h4 {
+                font-size: 13px;
+            }
+
+            #recommended .cart-btn {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+
+            /* Footer adjustments */
+            footer {
+                padding: 20px 15px;
+            }
+
+            .footer-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .footer-col {
+                width: 100%;
+            }
+
+            .footer-col h3 {
+                font-size: 16px;
+                margin-bottom: 10px;
+            }
+
+            .footer-col p,
+            .footer-col li a {
+                font-size: 13px;
+            }
+
+            .whatsapp-float {
+                right: 20px;
+                bottom: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+        }
+
+        /* Extra small devices (Galaxy S8: 360px) */
+        @media (max-width: 360px) {
+
+            /* Further adjustments for 360px screens */
+            #cart table {
+                min-width: 650px;
+                font-size: 11px;
+            }
+
+            #cart table tbody tr td {
+                padding: 8px 3px;
+            }
+
+            /* Hide both column headers (1 and 2) and remove column on 360px screens */
+            #cart table thead tr td:nth-child(1),
+            #cart table thead tr td:nth-child(2),
+            #cart table tbody tr td:nth-child(1),
+            #cart table tbody tr td:nth-child(2) {
+                display: none;
+            }
+
+            /* Adjust quantity input */
+            #cart table input[type="number"] {
+                width: 40px;
+                height: 25px;
+                font-size: 12px;
+            }
+
+            /* Hide price column on extremely small screens */
+            #cart table thead tr td:nth-child(4),
+            #cart table tbody tr td:nth-child(4) {
+                display: none;
+            }
+
+            /* Show it in the product name instead */
+            #cart table tbody tr td:nth-child(3)::after {
+                content: " - " attr(data-price);
+                color: #F59E0B;
+                font-size: 10px;
+            }
+
+            /* Optimize cart totals for 360px screens */
+            #subtotal {
+                width: 100%;
+                display: block;
+                padding: 15px;
+                border-radius: 6px;
+                background: linear-gradient(135deg, rgba(107, 70, 193, 0.15) 0%, rgba(245, 158, 11, 0.15) 100%);
+                margin-top: 20px;
+            }
+
+            #subtotal h3 {
+                font-size: 16px;
+                margin-bottom: 12px;
+                color: #F59E0B;
+            }
+
+            #subtotal table {
+                width: 100%;
+                display: table;
+                border-collapse: collapse;
+            }
+
+            #subtotal table tr {
+                display: table-row;
+            }
+
+            #subtotal table td {
+                padding: 8px 3px;
+                font-size: 12px;
+                color: #000;
+                display: table-cell;
+            }
+
+            #subtotal table td:first-child {
+                text-align: left;
+            }
+
+            #subtotal table td:last-child {
+                text-align: right;
+                color: #000;
+                font-weight: 600;
+            }
+
+            #subtotal table tr:last-child td {
+                font-size: 14px;
+                padding-top: 10px;
+                color: #F59E0B !important;
+                border-top: 1px solid #6B46C1;
+            }
+
+            .normal {
+                width: 100%;
+                padding: 10px;
+                font-size: 13px;
+                margin-top: 10px;
+            }
+
+            #recommended .Pro {
+                width: 180px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- HEADER SECTION (unchanged from your original) -->
+    <section id="header">
+        <a href="index.html"><img src="img4.png" class="logo" alt="Novuna Electronics"></a>
+        <div>
+            <ul id="navbar">
+                <li><a href="index.html">Home</a></li>
+
+                <li><a href="shop.html">Shop</a></li>
+                <!-- Account Dropdown -->
+                <li class="account-dropdown">
+                    <a href="#" id="account-toggle">
+                        <i class="fas fa-user"></i>Account
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                    </a>
+                    <div class="dropdown-menu" id="account-menu">
+                        <a href="login.html" class="dropdown-item">
+                            <i class="fas fa-sign-in-alt"></i> Sign In
+                        </a>
+                        <a href="login.html" class="dropdown-item">
+                            <i class="fas fa-user-plus"></i> Create Account
+                        </a>
+                    </div>
+                </li>
+                <li id="lg-cart"><a class="active" href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a></li>
+                <li><a href="#" id="close"><i class="fa fa-times" aria-hidden="true"></i></a></li>
+            </ul>
+        </div>
+        <div id="mobile">
+            <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a>
+            <i id="bar" class="fas fa-outdent"></i>
+        </div>
+    </section>
+
+
+    <!-- CART ITEMS SECTION -->
+    <section id="cart" class="section-p1">
+        <h2 style="color: #F59E0B; margin-bottom: 20px;">Your Shopping Cart</h2>
+        <div class="cart-layout">
+            <table width="100%">
+                <thead>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>Product</td>
+                        <td>Price</td>
+                        <td>Quantity</td>
+                        <td>Subtotal</td>
+                    </tr>
+                </thead>
+                <tbody id="cart-items">
+                    <!-- Cart items will be dynamically added here by cart.js -->
+                </tbody>
+            </table>
+
+            <!-- CART TOTALS SECTION -->
+            <div id="subtotal">
+                <h3>Cart Totals</h3>
+                <table>
+                    <tr>
+                        <td>Subtotal</td>
+                        <td id="cart-subtotal">UGX.0</td>
+                    </tr>
+                    <tr>
+                        <td>Shipping</td>
+                        <td>Free</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total</strong></td>
+                        <td><strong id="cart-total">UGX.0</strong></td>
+                    </tr>
+                </table>
+                <button class="normal" onclick="proceedToCheckout()">ORDER NOW</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- RECOMMENDED PRODUCTS SECTION -->
+    <section id="recommended" class="section-p1">
+        <h2 style="color: #F59E0B; text-align: center; margin-bottom: 20px;">Recommended Products</h2>
+        <div class="pro-container" id="recommended-products">
+            <!-- Recommended products will be loaded here -->
+        </div>
+    </section>
+
+    <!-- ===== Contact Section ===== -->
+    <footer id="contact" class="section-p1">
+        <div class="footer-container">
+            <div class="footer-col">
+                <h3>INFORMATION</h3>
+                <ul>
+                    <li><a href="#">About us</a></li>
+                    <li><a href="#">Delivery Information</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>ACCOUNT</h3>
+                <ul>
+                    <li><a href="#">My Account</a></li>
+                    <li><a href="#">Order History</a></li>
+                    <li><a href="#">Wishlist</a></li>
+                    <li><a href="#">Newsletter</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>CONTACT US</h3>
+                <p><strong>Address:</strong> Kampala, Uganda</p>
+                <p><strong>Phone:</strong> +256 754 030391</p>
+                <p><strong>Email:</strong>Customerservice.Novuna@gmail.com</p>
+                <div class="socials">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <!-- Floating WhatsApp -->
+        <a href="https://wa.me/256754030391" class="whatsapp-float" target="_blank" aria-label="Chat on WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+        <p class="footer-bottom">© 2025 Novuna electronics. All rights reserved.</p>
+    </footer>
+
+
+    <!-- SCRIPTS -->
+    <script src="api.js"></script>
+    <script src="cart.js"></script>
+    <script src="script.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        // Load recommended products with auto-carousel
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('recommended-products');
+            if (!container) return;
+
+            try {
+                // Load from API
+                let apiProducts = [];
+                if (typeof api !== 'undefined' && api.getProducts) {
+                    const res = await api.getProducts({ limit: 100 });
+                    apiProducts = Array.isArray(res?.data) ? res.data : [];
+                }
+
+                // Load from localStorage
+                let localProducts = [];
+                try {
+                    localProducts = JSON.parse(localStorage.getItem('adminProducts') || '[]');
+                } catch (e) {
+                    console.error('Error parsing adminProducts:', e);
+                }
+
+                // Merge products
+                const existingIds = new Set(apiProducts.map(p => p._id || ''));
+                let merged = [
+                    ...apiProducts,
+                    ...localProducts.filter(p => !existingIds.has(p._id || ''))
+                ].map(p => ({
+                    _id: p._id || `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+                    name: p.name || 'Product',
+                    category: p.category || 'General',
+                    price: Number(p.price || 0),
+                    image: p.image || 'img1.png',
+                    description: p.description || ''
+                }));
+
+                // If no products, show placeholder
+                if (merged.length === 0) {
+                    container.innerHTML = '<div style="width:100%;text-align:center;padding:40px;color:#999;">No recommended products available</div>';
+                    return;
+                }
+
+                // Shuffle or take diverse products (take every other or sample)
+                const recommended = merged.slice(0, 10);
+                const formatUGX = (value) => `UGX.${Number(value || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+
+                container.innerHTML = recommended.map(p => `
+            <div class="Pro" data-id="${p._id}" data-name="${(p.name || '').replace(/"/g, '&quot;')}" data-category="${(p.category || '').replace(/"/g, '&quot;')}" data-price="${p.price}" data-image="${(p.image || '').replace(/"/g, '&quot;')}">
+              <img src="${p.image}" onerror="this.src='https://placehold.co/250x250/111/FFF?text=IMG'" alt="${(p.name || '').replace(/"/g, '&quot;')}">
+              <button class="favorite-btn" data-id="${p._id}"><i class="far fa-heart"></i></button>
+              <div class="des">
+                <span>${p.name}</span>
+                <h5>${p.category}</h5>
+                <div class="star">
+                  <i class="fas fa-star" style="color:#F59E0B;"></i>
+                  <i class="fas fa-star" style="color:#F59E0B;"></i>
+                  <i class="fas fa-star" style="color:#F59E0B;"></i>
+                  <i class="fas fa-star" style="color:#F59E0B;"></i>
+                  <i class="fas fa-star" style="color:#F59E0B;"></i>
+                </div>
+                <h4>${formatUGX(p.price)}</h4>
+              </div>
+              <button class="cart-btn"><i class="fa-solid fa-cart-shopping"></i> Add to cart</button>
+            </div>
+          `).join('');
+
+                // Initialize favorite button states
+                const favoriteBtns = container.querySelectorAll('.favorite-btn');
+                favoriteBtns.forEach(btn => {
+                    const productId = btn.getAttribute('data-id');
+                    const isFavorited = typeof isProductInWishlist === 'function' && isProductInWishlist(productId);
+                    btn.classList.toggle('favorited', isFavorited);
+                    const icon = btn.querySelector('i');
+                    if (icon) {
+                        icon.className = isFavorited ? 'fas fa-heart' : 'far fa-heart';
+                    }
+                });
+
+                // Auto-carousel functionality
+                let currentIndex = 0;
+                const autoCarousel = () => {
+                    const containerWidth = container.scrollWidth;
+                    const itemWidth = container.firstElementChild?.offsetWidth + 24 || 320; // 24px gap
+                    currentIndex++;
+                    const scrollPosition = Math.min(currentIndex * itemWidth, containerWidth - container.offsetWidth);
+                    container.scrollTo({ left: scrollPosition, behavior: 'smooth' });
+
+                    // Reset if reached the end
+                    if (scrollPosition >= containerWidth - container.offsetWidth) {
+                        setTimeout(() => {
+                            currentIndex = 0;
+                            container.scrollTo({ left: 0, behavior: 'smooth' });
+                        }, 3000);
+                    }
+                };
+
+                // Auto-scroll every 5 seconds
+                setInterval(autoCarousel, 5000);
+
+                // Global listeners in script.js will handle cart and favorite buttons
+                if (typeof updateCartIcon === 'function') updateCartIcon();
+            } catch (e) {
+                console.error('Error loading recommended products:', e);
+                container.innerHTML = '<div style="width:100%;text-align:center;padding:40px;color:#999;">Error loading products</div>';
+            }
+        });
+    </script>
+    <script src="chatbot.js"></script>
+</body>
+
+</html>

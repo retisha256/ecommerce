@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wishlist - Novuna Electronics</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <section id="header">
+        <a href="index.html"><img src="img4.png" class="logo" alt="Novuna Electronics"></a>
+        <div>
+            <ul id="navbar">
+
+
+                <li id="search-container">
+
+                    <div class="search-box">
+
+                        <input type="text" id="search-input" placeholder="Search products...">
+
+                        <button id="search-btn"><i class="fas fa-search"></i></button>
+
+                    </div>
+
+                </li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a class="active" href="wishlist.html">Wishlist</a></li>
+
+                <!-- Account Dropdown -->
+
+                <li class="account-dropdown">
+
+                    <a href="#" id="account-toggle">
+
+                        <i class="fas fa-user"></i>Account
+
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+
+                    </a>
+
+                    <div class="dropdown-menu" id="account-menu">
+
+                        <a href="login.html" class="dropdown-item">
+
+                            <i class="fas fa-sign-in-alt"></i> Sign In
+
+                        </a>
+
+                        <a href="login.html" class="dropdown-item">
+
+                            <i class="fas fa-user-plus"></i> Create Account
+
+                        </a>
+
+                        <a href="#" class="dropdown-item" id="account-logout" style="display: none;">
+
+                            <i class="fas fa-sign-out-alt"></i> Logout
+
+                        </a>
+
+                    </div>
+
+                </li>
+
+                <li id="lg-cart"><a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a></li>
+
+
+                <li><a href="#" id="close"><i class="fa fa-times" aria-hidden="true"></i></a></li>
+            </ul>
+        </div>
+        <div id="mobile">
+            <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a>
+            <i id="bar" class="fas fa-outdent"></i>
+        </div>
+    </section>
+
+    <section id="page-header" class="section-p1">
+        <h2>#Wishlist</h2>
+        <p>Your favorite products</p>
+    </section>
+
+    <section id="product1" class="section-p1">
+        <!-- Products are loaded dynamically from wishlist by script.js -->
+        <div class="pro-container">
+        </div>
+    </section>
+
+    <section id="newsletter" class="section-p1 section-m1">
+        <div class="newstext">
+            <h4>Sign Up For Newsletters</h4>
+            <p>Get E-mail updates about our latest shop and <span>special offers.</span></p>
+        </div>
+
+        <div class="form">
+            <input type="text" id="newsletter-email" placeholder="Your email address">
+            <br><br>
+            <button class="normal" id="newsletter-btn">Sign Up</button>
+        </div>
+    </section>
+
+    <footer class="section-p1">
+        <div class="col">
+            <img class="logo" src="img4.png" alt="">
+            <h4>Contact</h4>
+            <p><strong>Address:</strong> Plot 22B, Kampala Road, Nakasero</p>
+            <p><strong>Phone:</strong> +256 414 595 945</p>
+            <p><strong>Hours:</strong> 10:00 - 18:00, Mon - Sat</p>
+            <div class="follow">
+                <h4>Follow us</h4>
+                <div class="icon">
+                    <i class="fab fa-facebook-f"></i>
+                    <i class="fab fa-twitter"></i>
+                    <i class="fab fa-instagram"></i>
+                    <i class="fab fa-pinterest-p"></i>
+                    <i class="fab fa-youtube"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <h4>About</h4>
+            <a href="#">About us</a>
+            <a href="#">Delivery Information</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms & Conditions</a>
+            <a href="#">Contact Us</a>
+        </div>
+
+        <div class="col">
+            <h4>My Account</h4>
+            <a href="login.html">Sign In</a>
+            <a href="cart.html">View Cart</a>
+            <a href="wishlist.html">My Wishlist</a>
+            <a href="#">Track My Order</a>
+            <a href="#">Help</a>
+        </div>
+
+        <div class="col install">
+            <h4>Install App</h4>
+            <p>From App Store or Google Play</p>
+            <div class="row">
+                <img src="app.jpg" alt="">
+                <img src="play.jpg" alt="">
+            </div>
+            <p>Secured Payment Gateways</p>
+            <img src="pay.png" alt="">
+        </div>
+
+        <div class="copyright">
+            <p>© 2025 Novuna electronics. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="api.js"></script>
+    <script src="script.js"></script>
+    <script src="cart.js"></script>
+    <script src="auth.js"></script>
+    <script src="chatbot.js"></script>
+</body>
+
+</html>

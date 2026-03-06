@@ -1,0 +1,23 @@
+[33mcommit b4f535f820ae93add17a59c8c87ca4d0e20557d2[m
+Author: retisha256 <retishanakiyemba202@gmail.com>
+Date:   Wed Nov 19 01:38:38 2025 +0300
+
+    Update project without secrets
+
+[33mcommit dd53eac259b0f0f514ec443e132f0f98781a3e7e[m
+Author: retisha256 <retishanakiyemba202@gmail.com>
+Date:   Wed Nov 19 01:02:54 2025 +0300
+
+    added google sign
+
+[33mcommit 69d6571b81e9c23cac9bf8afd7c7356c0035c501[m
+Author: retisha256 <retishanakiyemba202@gmail.com>
+Date:   Sat Nov 15 15:29:26 2025 +0300
+
+    worked on the logout
+
+[33mcommit 3d43c3c3e3b8ce48a2b13a6b0acecbdf1ed34dca[m
+Author: retisha256 <retishanakiyemba202@gmail.com>
+Date:   Sat Nov 15 14:17:25 2025 +0300
+
+    made changes to api, made changes to the login, added a reset password page
