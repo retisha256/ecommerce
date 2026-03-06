@@ -7,6 +7,21 @@
     font-family: 'Spartan', sans-serif;
 }
 
+@media (max-width: 768px) {
+    #novuna-chatbot-container {
+        bottom: 85px;
+        /* Adjust for mobile WhatsApp icon size */
+        right: 20px;
+    }
+
+    #novuna-chatbot-window {
+        width: 300px;
+        height: 400px;
+        right: 0;
+        bottom: 70px;
+    }
+}
+
 /* Chatbot Floating Button */
 #novuna-chatbot-toggle {
     width: 60px;
