@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - Novuna Electronics</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ===== CART PAGE COMPLETE FIX ===== */
+        #cart {
+            background: #f5f5f5;
+            min-height: 80vh;
+            padding: 40px 60px;
+            width: 100%;
+            margin-bottom: 0;
+        }
+
+        #cart h2 {
+            color: #6B46C1;
+            font-size: 28px;
+            margin-bottom: 30px;
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+        }
+
+        #cart h2::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #6B46C1, #F59E0B);
+            border-radius: 2px;
+        }
+
+        .cart-layout {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            margin-bottom: 0;
+        }
+
+        /* Cart Table */
+        #cart table {
+            flex: 1 1 65%;
+            min-width: 500px;
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border-collapse: collapse;
+        }
+
+        #cart table thead {
+            background: linear-gradient(135deg, #6B46C1, #8B5CF6);
+        }
+
+        #cart table thead td {
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            padding: 18px 12px;
+            letter-spacing: 0.5px;
+        }
+
+        #cart table tbody tr {
+            border-bottom: 1px solid #e5e7eb;
+            transition: background 0.2s ease;
+        }
+
+        #cart table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        #cart table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        #cart table td {
+            padding: 20px 12px;
+            vertical-align: middle;
+            color: #333;
+        }
+
+        /* Product Image */
+        #cart table td:nth-child(2) img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 2px solid #f0f0f0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Product Name */
+        #cart table td:nth-child(3) {
+            text-align: left;
+            font-weight: 500;
+            color: #111;
+        }
+
+        #cart table td:nth-child(3) small {
+            color: #6B46C1;
+            font-size: 12px;
+            font-weight: 600;
+            display: block;
+            margin-top: 4px;
+        }
+
+        /* Price and Subtotal */
+        #cart table td:nth-child(4),
+        #cart table td:nth-child(6) {
+            color: #6B46C1;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        /* Quantity Input */
+        #cart table td:nth-child(5) input {
+            width: 70px;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        #cart table td:nth-child(5) input:focus {
+            outline: none;
+            border-color: #6B46C1;
+            box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.1);
+        }
+
+        /* Remove Button */
+        #cart table td:first-child a {
+            color: #F59E0B;
+            font-size: 20px;
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        #cart table td:first-child a:hover {
+            color: #ff4d4d;
+            transform: scale(1.1);
+        }
+
+        /* Cart Totals Section */
+        #subtotal {
+            flex: 0 1 30%;
+            min-width: 300px;
+            background: #fff;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 100px;
+        }
+
+        #subtotal h3 {
+            color: #6B46C1;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #F59E0B;
+            position: relative;
+        }
+
+        #subtotal table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+
+        #subtotal table tr {
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        #subtotal table tr:last-child {
+            border-bottom: none;
+        }
+
+        #subtotal table td {
+            padding: 15px 0;
+            color: #333;
+            font-size: 16px;
+        }
+
+        #subtotal table td:first-child {
+            font-weight: 500;
+            color: #666;
+        }
+
+        #subtotal table td:last-child {
+            text-align: right;
+            font-weight: 600;
+            color: #111;
+        }
+
+        #subtotal table tr:last-child td {
+            font-size: 20px;
+            font-weight: 700;
+            color: #6B46C1;
+            padding-top: 20px;
+        }
+
+        #subtotal table tr:last-child td:first-child {
+            color: #333;
+        }
+
+        /* Order Now Button */
+        #subtotal .normal {
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #6B46C1, #F59E0B);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(107, 70, 193, 0.2);
+        }
+
+        #subtotal .normal:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(107, 70, 193, 0.3);
+            background: linear-gradient(135deg, #8B5CF6, #F59E0B);
+        }
+
+        /* Empty Cart State */
+        .empty-cart {
+            text-align: center;
+            padding: 60px 40px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            width: 100%;
+        }
+
+        .empty-cart i {
+            font-size: 80px;
+            color: #F59E0B;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-cart h3 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .empty-cart p {
+            color: #999;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        .empty-cart .shop-now-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #6B46C1, #F59E0B);
+            color: white;
+            padding: 14px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(107, 70, 193, 0.2);
+        }
+
+        .empty-cart .shop-now-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(107, 70, 193, 0.3);
+        }
+
+        /* Remove space between cart and recommended */
+        #cart + #recommended {
+            margin-top: 0;
+            padding-top: 40px;
+        }
+
+        /* ===== RESPONSIVE CART PAGE ===== */
+
+        /* Large Tablets (768px - 991px) */
+        @media (max-width: 991px) {
+            #cart {
+                padding: 30px 20px;
+            }
+
+            .cart-layout {
+                flex-direction: column;
+            }
+
+            #cart table {
+                min-width: 100%;
+                width: 100%;
+            }
+
+            #subtotal {
+                width: 100%;
+                min-width: 100%;
+                position: static;
+                margin-top: 20px;
+            }
+        }
+
+        /* Medium Tablets (576px - 767px) */
+        @media (max-width: 767px) {
+            #cart {
+                padding: 20px 15px;
+            }
+
+            #cart h2 {
+                font-size: 24px;
+            }
+
+            #cart table {
+                font-size: 13px;
+            }
+
+            #cart table td {
+                padding: 15px 8px;
+            }
+
+            #cart table td:nth-child(2) img {
+                width: 50px;
+                height: 50px;
+            }
+
+            #cart table td:nth-child(5) input {
+                width: 55px;
+                padding: 8px;
+            }
+
+            #cart table td:nth-child(4),
+            #cart table td:nth-child(6) {
+                font-size: 14px;
+            }
+
+            #subtotal {
+                padding: 25px;
+                margin-top: 20px;
+            }
+
+            #subtotal h3 {
+                font-size: 20px;
+            }
+
+            #subtotal table td {
+                font-size: 14px;
+                padding: 12px 0;
+            }
+
+            #subtotal table tr:last-child td {
+                font-size: 18px;
+            }
+        }
+
+        /* Mobile Phones (< 576px) */
+        @media (max-width: 575px) {
+            #cart {
+                padding: 15px 10px;
+            }
+
+            #cart h2 {
+                font-size: 22px;
+                margin-bottom: 20px;
+            }
+
+            /* Hide image column on mobile */
+            #cart table thead td:nth-child(2),
+            #cart table tbody td:nth-child(2) {
+                display: none;
+            }
+
+            #cart table {
+                min-width: 100%;
+                font-size: 12px;
+            }
+
+            #cart table thead td {
+                padding: 12px 5px;
+                font-size: 12px;
+            }
+
+            #cart table td {
+                padding: 12px 5px;
+            }
+
+            #cart table td:nth-child(3) {
+                max-width: 120px;
+                white-space: normal;
+                word-break: break-word;
+            }
+
+            #cart table td:nth-child(3) small {
+                font-size: 10px;
+            }
+
+            #cart table td:nth-child(4),
+            #cart table td:nth-child(6) {
+                font-size: 12px;
+            }
+
+            #cart table td:nth-child(5) input {
+                width: 45px;
+                padding: 6px;
+                font-size: 12px;
+            }
+
+            #cart table td:first-child a {
+                font-size: 16px;
+            }
+
+            #subtotal {
+                padding: 20px;
+                margin-top: 15px;
+            }
+
+            #subtotal h3 {
+                font-size: 18px;
+                margin-bottom: 15px;
+            }
+
+            #subtotal table td {
+                padding: 10px 0;
+                font-size: 13px;
+            }
+
+            #subtotal table tr:last-child td {
+                font-size: 16px;
+            }
+
+            #subtotal .normal {
+                padding: 14px;
+                font-size: 14px;
+            }
+
+            .empty-cart {
+                padding: 40px 20px;
+            }
+
+            .empty-cart i {
+                font-size: 60px;
+            }
+
+            .empty-cart h3 {
+                font-size: 20px;
+            }
+
+            .empty-cart p {
+                font-size: 14px;
+            }
+
+            .empty-cart .shop-now-btn {
+                padding: 12px 30px;
+                font-size: 14px;
+            }
+        }
+
+        /* Very Small Phones (< 360px) */
+        @media (max-width: 359px) {
+            #cart table thead td {
+                font-size: 11px;
+                padding: 10px 3px;
+            }
+
+            #cart table td {
+                padding: 10px 3px;
+                font-size: 11px;
+            }
+
+            #cart table td:nth-child(3) {
+                max-width: 90px;
+            }
+
+            #cart table td:nth-child(4),
+            #cart table td:nth-child(6) {
+                font-size: 11px;
+            }
+
+            #cart table td:nth-child(5) input {
+                width: 38px;
+                padding: 4px;
+                font-size: 11px;
+            }
+
+            #subtotal {
+                padding: 15px;
+            }
+
+            #subtotal h3 {
+                font-size: 16px;
+            }
+
+            #subtotal table td {
+                font-size: 12px;
+                padding: 8px 0;
+            }
+
+            #subtotal .normal {
+                padding: 12px;
+                font-size: 13px;
+            }
+        }
+
+        /* Recommended Products Section */
+        #recommended {
+            background: #f5f5f5;
+            padding: 40px 60px;
+            width: 100%;
+        }
+
+        #recommended h2 {
+            color: #6B46C1;
+            font-size: 24px;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        #recommended h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #6B46C1, #F59E0B);
+            border-radius: 2px;
+        }
+
+        #recommended .pro-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding: 10px 0 20px;
+            scrollbar-width: thin;
+            scrollbar-color: #6B46C1 #e0e0e0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #recommended .pro-container::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        #recommended .pro-container::-webkit-scrollbar-track {
+            background: #e0e0e0;
+            border-radius: 10px;
+        }
+
+        #recommended .pro-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #6B46C1, #F59E0B);
+            border-radius: 10px;
+        }
+
+        #recommended .Pro {
+            flex: 0 0 auto;
+            width: 200px;
+            background: #fff;
+            border-radius: 12px;
+            padding: 15px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        #recommended .Pro:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(107, 70, 193, 0.15);
+        }
+
+        #recommended .Pro img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        #recommended .Pro .des {
+            text-align: center;
+        }
+
+        #recommended .Pro .des span {
+            color: #6B46C1;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        #recommended .Pro .des h5 {
+            color: #333;
+            font-size: 14px;
+            margin: 5px 0;
+            height: 35px;
+            overflow: hidden;
+            font-weight: 600;
+        }
+
+        #recommended .Pro .des h4 {
+            color: #6B46C1;
+            font-size: 15px;
+            font-weight: 700;
+            margin: 8px 0;
+        }
+
+        #recommended .Pro .cart-btn {
+            background: linear-gradient(135deg, #6B46C1, #F59E0B);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        #recommended .Pro .cart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(107, 70, 193, 0.3);
+        }
+
+        @media (max-width: 575px) {
+            #recommended {
+                padding: 30px 15px;
+            }
+
+            #recommended h2 {
+                font-size: 20px;
+            }
+
+            #recommended .Pro {
+                width: 160px;
+                padding: 10px;
+            }
+
+            #recommended .Pro img {
+                height: 110px;
+            }
+
+            #recommended .Pro .des h5 {
+                font-size: 12px;
+                height: 30px;
+            }
+
+            #recommended .Pro .des h4 {
+                font-size: 13px;
+            }
+
+            #recommended .Pro .cart-btn {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <section id="header">
+        <a href="index.html"><img src="img4.png" class="logo" alt="Novuna Electronics"></a>
+        <div>
+            <ul id="navbar">
+                <!-- Mobile menu close button at the top -->
+                <li id="close-li" class="show-mobile">
+                    <a href="#" id="close"><i class="fa fa-times" aria-hidden="true"></i> Close Menu</a>
+                </li>
+
+                <!-- Navigation links -->
+                <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="shop.html"><i class="fas fa-store"></i> Shop</a></li>
+
+                <!-- Account Dropdown (desktop) -->
+                <li class="account-dropdown hide-mobile">
+                    <a href="#" id="account-toggle">
+                        <i class="fas fa-user"></i> Account
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                    </a>
+                    <div class="dropdown-menu" id="account-menu">
+                        <a href="login.html" class="dropdown-item">
+                            <i class="fas fa-sign-in-alt"></i> Sign In
+                        </a>
+                        <a href="login.html" class="dropdown-item">
+                            <i class="fas fa-user-plus"></i> Create Account
+                        </a>
+                    </div>
+                </li>
+
+                <!-- Mobile Account links -->
+                <li class="show-mobile">
+                    <a href="login.html"><i class="fas fa-sign-in-alt"></i> Sign In</a>
+                </li>
+                <li class="show-mobile">
+                    <a href="login.html"><i class="fas fa-user-plus"></i> Create Account</a>
+                </li>
+
+                <!-- Cart (desktop) -->
+                <li id="lg-cart" class="hide-mobile"><a class="active" href="cart.html"><i class="fa-solid fa-cart-shopping"></i> Cart</a></li>
+                
+                <!-- Cart (mobile) -->
+                <li class="show-mobile"><a class="active" href="cart.html"><i class="fa-solid fa-cart-shopping"></i> View Cart</a></li>
+            </ul>
+        </div>
+        <div id="mobile">
+            <div class="mobile-account-dropdown">
+                <a href="#" id="mobile-account"><i class="fas fa-user"></i></a>
+                <div class="mobile-dropdown-menu" id="mobile-account-menu">
+                    <a href="login.html" class="mobile-dropdown-item">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </a>
+                    <a href="login.html" class="mobile-dropdown-item">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </a>
+                </div>
+            </div>
+            <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a>
+            <i id="bar" class="fas fa-outdent"></i>
+        </div>
+    </section>
+
+    <section id="cart">
+        <h2>Your Shopping Cart</h2>
+        <div class="cart-layout">
+            <!-- Cart Items Table -->
+            <table width="100%">
+                <thead>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>Product</td>
+                        <td>Price</td>
+                        <td>Quantity</td>
+                        <td>Subtotal</td>
+                    </tr>
+                </thead>
+                <tbody id="cart-items">
+                    <!-- Cart items will be dynamically added here by cart.js -->
+                </tbody>
+            </table>
+
+            <!-- Cart Totals Section -->
+            <div id="subtotal">
+                <h3>Cart Totals</h3>
+                <table>
+                    <tr>
+                        <td>Subtotal</td>
+                        <td id="cart-subtotal">UGX 0</td>
+                    </tr>
+                    <tr>
+                        <td>Shipping</td>
+                        <td>Free</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total</strong></td>
+                        <td><strong id="cart-total">UGX 0</strong></td>
+                    </tr>
+                </table>
+                <button class="normal" onclick="proceedToCheckout()">ORDER NOW</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="recommended">
+        <h2>Recommended Products</h2>
+        <div class="pro-container" id="recommended-products">
+            <!-- Recommended products will be loaded here -->
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="footer-container">
+            <div class="footer-col">
+                <h3>INFORMATION</h3>
+                <ul>
+                    <li><a href="#">About us</a></li>
+                    <li><a href="#">Delivery Information</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>ACCOUNT</h3>
+                <ul>
+                    <li><a href="#">My Account</a></li>
+                    <li><a href="#">Order History</a></li>
+                    <li><a href="wishlist.html">Wishlist</a></li>
+                    <li><a href="#">Newsletter</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>CONTACT US</h3>
+                <p><strong>Address:</strong> Kampala, Uganda</p>
+                <p><strong>Phone:</strong> +256 754 030391</p>
+                <p><strong>Email:</strong> customerservice.novuna@gmail.com</p>
+                <div class="socials">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <p class="footer-bottom">© 2026 Novuna electronics. All rights reserved. Designed by 🦋Tisha💙</p>
+    </footer>
+
+    <!-- Floating WhatsApp -->
+    <a href="https://wa.me/256754030391" class="whatsapp-float" target="_blank" aria-label="Chat on WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script src="api.js"></script>
+    <script src="cart.js"></script>
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+    <script src="chatbot.js"></script>
+    <script>
+        // Load recommended products
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('recommended-products');
+            if (!container) return;
+
+            try {
+                // Load from API
+                let apiProducts = [];
+                if (typeof api !== 'undefined' && api.getProducts) {
+                    const res = await api.getProducts({ limit: 100 });
+                    apiProducts = Array.isArray(res?.data) ? res.data : [];
+                }
+
+                // Load from localStorage
+                let localProducts = [];
+                try {
+                    localProducts = JSON.parse(localStorage.getItem('adminProducts') || '[]');
+                } catch (e) {
+                    console.error('Error parsing adminProducts:', e);
+                }
+
+                // Merge products
+                const existingIds = new Set(apiProducts.map(p => p._id || ''));
+                let merged = [
+                    ...apiProducts,
+                    ...localProducts.filter(p => !existingIds.has(p._id || ''))
+                ].map(p => ({
+                    _id: p._id || `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+                    name: p.name || 'Product',
+                    category: p.category || 'General',
+                    price: Number(p.price || 0),
+                    image: p.image || 'img1.png',
+                    description: p.description || ''
+                }));
+
+                if (merged.length === 0) {
+                    container.innerHTML = '<div style="width:100%;text-align:center;padding:40px;color:#999;">No recommended products available</div>';
+                    return;
+                }
+
+                const recommended = merged.slice(0, 8);
+                const formatUGX = (value) => `UGX ${Number(value || 0).toLocaleString()}`;
+
+                container.innerHTML = recommended.map(p => `
+                    <div class="Pro" data-id="${p._id}" data-name="${(p.name || '').replace(/"/g, '&quot;')}" data-category="${(p.category || '').replace(/"/g, '&quot;')}" data-price="${p.price}" data-image="${(p.image || '').replace(/"/g, '&quot;')}">
+                        <img src="${p.image}" onerror="this.src='https://placehold.co/200x160/111/FFF?text=IMG'" alt="${(p.name || '').replace(/"/g, '&quot;')}">
+                        <div class="des">
+                            <span>${p.category}</span>
+                            <h5>${p.name}</h5>
+                            <h4>${formatUGX(p.price)}</h4>
+                        </div>
+                        <button class="cart-btn"><i class="fa-solid fa-cart-shopping"></i> Add</button>
+                    </div>
+                `).join('');
+
+                // Auto-carousel functionality
+                let scrollInterval = setInterval(() => {
+                    if (container.scrollLeft + container.clientWidth >= container.scrollWidth) {
+                        container.scrollTo({ left: 0, behavior: 'smooth' });
+                    } else {
+                        container.scrollBy({ left: 220, behavior: 'smooth' });
+                    }
+                }, 5000);
+
+                // Stop carousel on hover
+                container.addEventListener('mouseenter', () => clearInterval(scrollInterval));
+                container.addEventListener('mouseleave', () => {
+                    scrollInterval = setInterval(() => {
+                        if (container.scrollLeft + container.clientWidth >= container.scrollWidth) {
+                            container.scrollTo({ left: 0, behavior: 'smooth' });
+                        } else {
+                            container.scrollBy({ left: 220, behavior: 'smooth' });
+                        }
+                    }, 5000);
+                });
+
+                if (typeof updateCartIcon === 'function') updateCartIcon();
+            } catch (e) {
+                console.error('Error loading recommended products:', e);
+                container.innerHTML = '<div style="width:100%;text-align:center;padding:40px;color:#999;">Error loading products</div>';
+            }
+        });
+
+        function proceedToCheckout() {
+            window.location.href = 'checkout.html';
+        }
+    </script>
+</body>
+
+</html>
