@@ -66,25 +66,8 @@ if (typeof MONGODB_URI === 'string') {
 mongoose.connect(MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-})
-    .then(() => console.log(' MongoDB connected successfully'))
-    .catch(err => console.error('MongoDB connection error:', err));
-
-
-// MongoDB Connection
-let MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/novuna-electronics';
-
-// Sanitize: Remove potential quotes if copied from .env or entered incorrectly in dashboard
-if (typeof MONGODB_URI === 'string') {
-    MONGODB_URI = MONGODB_URI.trim().replace(/^['"]|['"]$/g, '');
-}
-
-// Add connection options for Render
-mongoose.connect(MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
     serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
-    socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
+    socketTimeoutMS: 45000,         // Close sockets after 45s of inactivity
 })
     .then(() => console.log('MongoDB connected successfully'))
     .catch(err => {
