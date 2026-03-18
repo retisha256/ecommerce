@@ -1,9 +1,13 @@
 #novuna-chatbot-container {
     position: fixed;
-    bottom: 95px;
+    bottom: 90px;        /* Anchor the whole widget to bottom-right, above WhatsApp */
     right: 25px;
     z-index: 9999;
     font-family: 'Spartan', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;           /* Space between chat window and toggle button */
 }
 
 /* Chatbot Floating Button - Teal with Gold accent */
@@ -21,6 +25,7 @@
     font-size: 28px;
     cursor: pointer;
     transition: all 0.3s ease;
+    flex-shrink: 0;
 }
 
 #novuna-chatbot-toggle:hover {
@@ -30,11 +35,8 @@
     border-color: #088178;
 }
 
-/* Chatbot Window */
+/* Chatbot Window - sits above the toggle button */
 #novuna-chatbot-window {
-    position: absolute;
-    bottom: 80px;
-    right: 0;
     width: 350px;
     height: 480px;
     background: #ffffff;
@@ -183,16 +185,15 @@
 /* Mobile responsive */
 @media (max-width: 768px) {
     #novuna-chatbot-container {
-        bottom: 85px;
+        bottom: 15px;
         right: 15px;
     }
-    
+
     #novuna-chatbot-window {
         width: 300px;
         height: 400px;
-        bottom: 75px;
     }
-    
+
     #novuna-chatbot-toggle {
         width: 55px;
         height: 55px;
