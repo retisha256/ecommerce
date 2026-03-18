@@ -6,8 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ecommerce website</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="chatbot.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
+  
 </head>
 
 <body>
@@ -201,9 +202,22 @@
   </section>
 
 
-  <section id="featuredproducts" class="section-p1">
+  <section id="featuredproducts" class="section-p1" style="
+    position:relative;
+    padding:60px 20px;
+    background:linear-gradient(135deg, #111 0%, #1a2a2a 60%, #0a1a1a 100%);
+    overflow:hidden;
+  ">
 
-    <h2>Featured Products</h2>
+    <h2 style="
+      text-align:center;
+      font-weight:800;
+      letter-spacing:.3px;
+      margin-bottom:28px;
+      background:linear-gradient(90deg, #FFB74D, #FF6B6B);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    ">Featured Products</h2>
 
     <p></p>
 
@@ -387,7 +401,8 @@
           <h4>UGX.20,000</h4>
         </div>
   </section>
-  <section id="banner" class="section-m1">
+  <section id="banner" class="section-m1"style="background: linear-gradient(135deg, #0a1a1a 0%, #088178 35%, #FF6B6B 70%, #FFA000 100%);">
+    
     <h4>Big Sale This Weekend </h4>
     <h2> Get up to <span>50% off </span>on selected electronics!
     </h2>
@@ -443,6 +458,7 @@
   <script src="cart.js"></script>
   <script src="script.js"></script>
   <script src="auth.js"></script>
+  <script src="chatbot.js"></script>
   <script>
     // Load featured products from system
     document.addEventListener('DOMContentLoaded', async () => {
@@ -497,11 +513,11 @@
               <span>${p.name}</span>
               <h5>${p.category}</h5>
               <div class="star">
-                <i class="fas fa-star" style="color:#F59E0B;"></i>
-                <i class="fas fa-star" style="color:#F59E0B;"></i>
-                <i class="fas fa-star" style="color:#F59E0B;"></i>
-                <i class="fas fa-star" style="color:#F59E0B;"></i>
-                <i class="fas fa-star" style="color:#F59E0B;"></i>
+                <i class="fas fa-star" style="color:#FFB74D;"></i>
+                <i class="fas fa-star" style="color:#FFB74D;"></i>
+                <i class="fas fa-star" style="color:#FFB74D;"></i>
+                <i class="fas fa-star" style="color:#FFB74D;"></i>
+                <i class="fas fa-star" style="color:#FFB74D;"></i>
               </div>
               <h4>${formatUGX(p.price)}</h4>
             </div>
@@ -530,7 +546,6 @@
       }
     });
   </script>
-  <script src="chatbot.js"></script>
   <!-- Floating WhatsApp -->
   <a href="https://wa.me/256754030391" class="whatsapp-float" target="_blank" aria-label="Chat on WhatsApp">
     <i class="fab fa-whatsapp"></i>

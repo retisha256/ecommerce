@@ -110,6 +110,17 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Password must be at least 6 characters.');
       }
     });
+
+    // Add hover effect
+    forgotBtn.addEventListener('mouseenter', function() {
+      this.style.background = '#FF6B6B';
+      this.style.color = 'white';
+    });
+
+    forgotBtn.addEventListener('mouseleave', function() {
+      this.style.background = '#FFB74D';
+      this.style.color = '#1a1a1a';
+    });
   }
 
   // Auto-logout features
@@ -125,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const navbar = document.getElementById('navbar');
     if (navbar && !document.getElementById('admin-logout')) {
       const logoutLi = document.createElement('li');
-      logoutLi.innerHTML = '<a href="#" id="admin-logout" style="color: var(--danger);"><i class="fas fa-sign-out-alt"></i> Logout</a>';
+      logoutLi.innerHTML = '<a href="#" id="admin-logout" style="color: #FF6B6B;"><i class="fas fa-sign-out-alt"></i> Logout</a>';
       navbar.appendChild(logoutLi);
       document.getElementById('admin-logout').addEventListener('click', (e) => {
         e.preventDefault();
@@ -191,8 +202,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ${stockStatus}
       </div>
       <div class="btn-container">
-        <button class="normal edit-btn" style="background: linear-gradient(135deg, #6B46C1, #F59E0B);"><i class="fas fa-edit"></i> Edit</button>
-        <button class="normal delete-btn" style="background: linear-gradient(135deg, #DC2626, #EF4444);"><i class="fas fa-trash"></i> Delete</button>
+        <button class="normal edit-btn" style="background: linear-gradient(135deg, #088178, #06655e);"><i class="fas fa-edit"></i> Edit</button>
+        <button class="normal delete-btn" style="background: linear-gradient(135deg, #dc2626, #b91c1c);"><i class="fas fa-trash"></i> Delete</button>
       </div>
     `;
 
@@ -287,6 +298,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  window.clearCompletedOrders = async function() {
+    if (!confirm('Clear all completed orders?')) return;
+    try {
+      const response = await api.getOrders();
+      const orders = response.data || [];
+      const completedOrders = orders.filter(o => o.paymentStatus === 'confirmed');
+      
+      for (const order of completedOrders) {
+        await api.deleteOrder(order._id || order.orderId);
+      }
+      toast('Completed orders cleared');
+      loadPendingOrders();
+    } catch (error) {
+      toast('Error clearing orders', 'error');
+    }
+  };
+
   async function loadPendingOrders() {
     try {
       if (typeof api !== 'undefined') {
@@ -300,6 +328,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('total-revenue').textContent = `UGX ${revenue.toLocaleString()}`;
 
         const container = document.getElementById('pending-orders-list');
+        if (!container) return;
+
         if (orders.length === 0) {
           container.innerHTML = '<p class="no-orders" style="grid-column: 1/-1; text-align: center; padding: 20px;">No orders yet</p>';
           return;
@@ -317,25 +347,28 @@ document.addEventListener('DOMContentLoaded', () => {
           `).join('') : '';
 
           return `
-            <div class="order-summary" style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px;">
+            <div class="order-summary" style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(8,129,120,0.05); margin-bottom: 20px; border-left: 4px solid ${order.paymentStatus === 'confirmed' ? '#28a745' : '#FFB74D'};">
               <div style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; display: flex; justify-content: space-between;">
-                <strong>Order #${order.orderId || order._id.slice(-6)}</strong>
-                <span class="status-badge ${statusClass}">${statusText}</span>
+                <strong style="color: #088178;">Order #${order.orderId || order._id.slice(-6)}</strong>
+                <span class="status-badge ${statusClass}" style="background: ${order.paymentStatus === 'confirmed' ? '#d4edda' : '#fff3cd'}; color: ${order.paymentStatus === 'confirmed' ? '#155724' : '#856404'}; padding: 4px 12px; border-radius: 20px; font-size: 12px;">${statusText}</span>
               </div>
               <div style="margin-bottom: 10px;">
-                <strong>Customer:</strong> ${order.customer?.firstName} ${order.customer?.lastName}<br>
-                <strong>Phone:</strong> ${order.customer?.phone || 'N/A'}
+                <strong>Customer:</strong> ${order.customer?.firstName || ''} ${order.customer?.lastName || ''}<br>
+                <strong>Phone:</strong> ${order.customer?.phone || 'N/A'}<br>
+                <strong>Email:</strong> ${order.customer?.email || 'N/A'}<br>
+                <strong>Address:</strong> ${order.customer?.address || 'N/A'}, ${order.customer?.city || ''}
               </div>
-              <div style="border-top: 1px solid #fafafa; padding-top: 10px; margin-bottom: 10px;">
+              <div style="border-top: 1px solid #f0f0f0; padding-top: 10px; margin-bottom: 10px;">
+                <strong style="color: #088178;">Items:</strong>
                 ${itemsHtml}
               </div>
-              <div style="font-weight: 700; font-size: 16px; color: #1a1a1a; margin-bottom: 15px;">
+              <div style="font-weight: 700; font-size: 18px; color: #FF6B6B; margin-bottom: 15px; text-align: right;">
                 Total: UGX ${(order.total || 0).toLocaleString()}
               </div>
-              <div style="display: flex; gap: 10px;">
+              <div style="display: flex; gap: 10px; justify-content: flex-end;">
                 ${order.paymentStatus === 'pending' ?
-              `<button class="btn btn-complete" onclick="updateOrderStatus('${order.orderId || order._id}', 'confirmed')" style="width: auto; padding: 8px 16px; background: #088178; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Confirm Payment</button>` :
-              `<button class="btn btn-clear" onclick="clearOrder('${order.orderId || order._id}')" style="width: auto; padding: 8px 16px; background: #eee; color: #666; border: none; border-radius: 4px; cursor: pointer;">Clear</button>`
+              `<button class="btn" onclick="updateOrderStatus('${order.orderId || order._id}', 'confirmed')" style="padding: 8px 16px; background: #088178; color: #fff; border: none; border-radius: 4px; cursor: pointer;"><i class="fas fa-check"></i> Confirm Payment</button>` :
+              `<button class="btn" onclick="clearOrder('${order.orderId || order._id}')" style="padding: 8px 16px; background: #FF6B6B; color: #fff; border: none; border-radius: 4px; cursor: pointer;"><i class="fas fa-trash"></i> Clear Order</button>`
             }
               </div>
             </div>
@@ -343,7 +376,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }).join('');
       }
     } catch (error) {
-      console.error(error);
+      console.error('Error loading orders:', error);
+      toast('Error loading orders', 'error');
     }
   }
 
@@ -351,35 +385,86 @@ document.addEventListener('DOMContentLoaded', () => {
   function startOrdersRefresh() {
     if (ordersRefreshInterval) clearInterval(ordersRefreshInterval);
     ordersRefreshInterval = setInterval(() => {
-      if (adminContent.style.display !== 'none') loadPendingOrders();
-    }, 15000);
+      if (adminContent && adminContent.style.display !== 'none') {
+        loadPendingOrders();
+      }
+    }, 15000); // Refresh every 15 seconds
   }
 
   function stopOrdersRefresh() {
     clearInterval(ordersRefreshInterval);
   }
 
-  // Toast Function
+  // ===============================
+  // TOAST NOTIFICATION FUNCTION
+  // ===============================
+
   function toast(message, type = 'success') {
     const note = document.createElement('div');
     note.className = 'auth-notification';
     note.style.cssText = `
-      position: fixed; top: 20px; right: 20px; z-index: 10000;
-      background: ${type === 'error' ? '#DC2626' : '#088178'}; color: #fff;
-      padding: 12px 16px; border-radius: 8px; box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      position: fixed; 
+      top: 20px; 
+      right: 20px; 
+      z-index: 10000;
+      background: ${type === 'error' ? '#dc2626' : '#088178'}; 
+      color: #fff;
+      padding: 12px 16px; 
+      border-radius: 8px; 
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
       font-weight: 600;
+      animation: slideIn 0.3s ease;
     `;
     note.textContent = message;
     document.body.appendChild(note);
-    setTimeout(() => note.remove(), 2500);
+    setTimeout(() => {
+      note.style.opacity = '0';
+      setTimeout(() => note.remove(), 300);
+    }, 2500);
   }
 
-  // Mobile menu toggle
+  // ===============================
+  // MOBILE MENU TOGGLE
+  // ===============================
+
   const bar = document.getElementById('bar');
   const nav = document.getElementById('navbar');
   const close = document.getElementById('close');
 
-  if (bar) bar.addEventListener('click', () => nav.classList.add('active'));
-  if (close) close.addEventListener('click', () => nav.classList.remove('active'));
+  if (bar) {
+    bar.addEventListener('click', () => {
+      nav.classList.add('active');
+    });
+  }
 
+  if (close) {
+    close.addEventListener('click', () => {
+      nav.classList.remove('active');
+    });
+  }
+
+  // Close menu when clicking outside
+  document.addEventListener('click', (e) => {
+    if (nav && nav.classList.contains('active') && 
+        !nav.contains(e.target) && 
+        !bar?.contains(e.target)) {
+      nav.classList.remove('active');
+    }
+  });
+
+  // Add CSS animation for toast
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+  `;
+  document.head.appendChild(style);
 });

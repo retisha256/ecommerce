@@ -1,12 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Determine API Base URL for Chatbot - FIXED VERSION
-    const apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? 'http://localhost:5003/api'  // Development
-        : '/api';  // Production (relative path works because backend serves frontend)
+    // Remove any existing chatbot first
+    const existingContainer = document.getElementById('novuna-chatbot-container');
+    if (existingContainer) {
+        existingContainer.remove();
+    }
 
-    console.log('🔍 Chatbot API URL:', apiUrl); // For debugging
+    // Determine API Base URL for Chatbot
+    const apiUrl = typeof window.api !== 'undefined' && window.api.API_BASE_URL
+        ? window.api.API_BASE_URL
+        : `http://${window.location.hostname || 'localhost'}:5003/api`;
 
-    // Inject CSS programmatically if not linked in head (failsafe)
+    // Inject CSS if not linked
     if (!document.querySelector('link[href*="chatbot.css"]')) {
         const link = document.createElement("link");
         link.rel = "stylesheet";
@@ -35,14 +39,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
                 </div>
                 <div id="novuna-chatbot-messages">
-                    <div class="chatbot-msg bot">Hi😊 ! I'm Novuna AI. How can I be of help!</div>
+                    <div class="chatbot-msg bot">Hi 😊! I'm Novuna AI. How can I help you today?</div>
                 </div>
                 <div id="novuna-chatbot-input-area">
                     <input type="text" id="novuna-chatbot-input" placeholder="Ask something..." autocomplete="off">
                     <button id="novuna-chatbot-send"><i class="fas fa-paper-plane"></i></button>
                 </div>
             </div>
-            
             <div id="novuna-chatbot-toggle">
                 <i class="fas fa-comment-dots"></i>
             </div>
@@ -60,20 +63,29 @@ document.addEventListener("DOMContentLoaded", () => {
     const chatInput = document.getElementById("novuna-chatbot-input");
     const sendBtn = document.getElementById("novuna-chatbot-send");
 
+    if (!toggleBtn || !closeBtn || !chatWindow) {
+        console.error("Chatbot elements not found!");
+        return;
+    }
+
     // Event Listeners for UI
     toggleBtn.addEventListener('click', () => {
         chatWindow.classList.add('active');
-        toggleBtn.style.display = 'none';
-        chatInput.focus();
+        // Keep toggle button visible
+        toggleBtn.style.display = 'flex';
+        if (chatInput) chatInput.focus();
     });
 
     closeBtn.addEventListener('click', () => {
         chatWindow.classList.remove('active');
-        setTimeout(() => { toggleBtn.style.display = 'flex'; }, 300);
+        // Keep toggle button visible
+        toggleBtn.style.display = 'flex';
     });
 
     // Send Message Logic
     const appendMessage = (text, sender) => {
+        if (!messagesContainer) return;
+        
         const msgDiv = document.createElement("div");
         msgDiv.className = `chatbot-msg ${sender}`;
         msgDiv.innerText = text;
@@ -89,13 +101,11 @@ document.addEventListener("DOMContentLoaded", () => {
         chatInput.value = '';
 
         try {
-            // Include locally cached products from admin.html so the chatbot knows about them even if the API failed to save them
+            // Include locally cached products
             let localProducts = [];
             try {
                 localProducts = JSON.parse(localStorage.getItem('adminProducts') || '[]');
             } catch (err) { }
-
-            console.log('Sending to:', `${apiUrl}/chatbot`); // Debug log
 
             const response = await fetch(`${apiUrl}/chatbot`, {
                 method: 'POST',
@@ -110,15 +120,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 appendMessage("I'm sorry, I encountered an error answering that.", 'bot');
             }
         } catch (error) {
-            console.error("❌ Chatbot API error:", error);
+            console.error("Chatbot API error:", error);
             appendMessage("I couldn't reach the server. Please try again later.", 'bot');
         }
     };
 
-    sendBtn.addEventListener('click', handleSendMessage);
-    chatInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            handleSendMessage();
-        }
-    });
+    if (sendBtn) {
+        sendBtn.addEventListener('click', handleSendMessage);
+    }
+    
+    if (chatInput) {
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleSendMessage();
+            }
+        });
+    }
+
+    console.log("Chatbot initialized successfully!");
 });

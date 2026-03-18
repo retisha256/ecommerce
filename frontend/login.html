@@ -74,7 +74,7 @@
 
     .auth-left {
       flex: 1;
-      background-image: url('img4.png'), linear-gradient(135deg, #6B46C1, #F59E0B);
+      background-image: url('img4.png'), linear-gradient(135deg, #088178, #FFB74D);
       background-position: center;
       background-repeat: no-repeat;
       background-size: 200px 150px, cover;
@@ -103,14 +103,22 @@
       text-align: center;
       cursor: pointer;
       border-bottom: 2px solid transparent;
-      font-weight: bold;
-      color: #555;
-      transition: all 0.3s;
+      font-weight: 600;
+      font-size: 14px;
+      color: #666;
+      transition: all 0.3s ease;
+      background: transparent;
+    }
+
+    .auth-tab:hover {
+      color: #088178;
+      background: rgba(8, 129, 120, 0.05);
     }
 
     .auth-tab.active {
-      border-color: #F59E0B;
-      color: purple;
+      border-color: #FFB74D;
+      color: #FFB74D;
+      background: rgba(255, 183, 77, 0.1);
     }
 
     /* --- Forms --- */
@@ -180,11 +188,32 @@
     }
 
     .auth-btn {
-      box-shadow: 0 12px 35px rgba(107, 70, 193, 0.6);
-      background: linear-gradient(135deg, #6B46C1, #F59E0B);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 14px 28px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, #088178, #06655e);
+      border: none;
+      border-radius: 12px;
       cursor: pointer;
-      font-weight: bold;
-      transition: all 0.3s;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 25px rgba(8, 129, 120, 0.3);
+    }
+
+    .auth-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 35px rgba(8, 129, 120, 0.45);
+      background: linear-gradient(135deg, #06655e, #088178);
+    }
+
+    .auth-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 18px rgba(8, 129, 120, 0.35);
     }
 
 
@@ -235,8 +264,8 @@
     }
 
     .social-btn.google-btn {
-      background: linear-gradient(135deg, #6B46C1, #F59E0B);
-      color: purple;
+      background: linear-gradient(135deg, #088178, #FFB74D);
+      color: #fff;
     }
 
     .social-btn:hover {
@@ -340,7 +369,7 @@
             <div class="form-options">
               <label class="checkbox-container">
                 <input type="checkbox" id="agreeTerms" required>
-                I agree to the <a href="terms.html" class="terms-link" style="color: purple;">Terms & Conditions</a>
+                I agree to the <a href="terms.html" class="terms-link" style="color: #FFB74D;">Terms & Conditions</a>
               </label>
             </div>
             <button type="submit" class="auth-btn">Create Account</button>

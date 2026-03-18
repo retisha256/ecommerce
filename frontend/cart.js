@@ -1,6 +1,7 @@
 // Cart functionality
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let viewed = JSON.parse(localStorage.getItem('viewed')) || [];
+let isAddingToCart = false; // Flag to prevent double-clicks
 
 // Handle cart clearing for new/anonymous users
 function handleAnonymousUserCart() {
@@ -70,6 +71,15 @@ document.addEventListener('visibilitychange', function() {
 
 // Add product to cart
 function addToCart(product) {
+    // Prevent double-click issues
+    if (isAddingToCart) {
+        console.log('Already adding to cart, please wait...');
+        return;
+    }
+    
+    isAddingToCart = true;
+    setTimeout(() => { isAddingToCart = false; }, 300); // Reset after 300ms
+    
     console.log('Adding to cart:', product);
     const existingItem = cart.find(item => item.id === product.id);
 
@@ -154,7 +164,7 @@ function updateViewedDisplay() {
                 <span>${item.name}</span>
                 <h4>${item.price}</h4>
             </div>
-            <a href="#"><i class="fa-solid fa-cart-shopping cart" style="color:#fff; background-color:#6B46C1; padding: 10px; border-radius: 50%;"></i></a>
+            <a href="#"><i class="fa-solid fa-cart-shopping cart" style="color:#fff; background-color:#088178; padding: 10px; border-radius: 50%;"></i></a>
         </div>
     `).join('');
 }
@@ -187,7 +197,7 @@ function updateCartDisplay() {
                             <h3 style="color:  #999; font-size: 28px; margin: 0 0 10px 0; font-weight: 700;">Your Cart is Empty</h3>
                             <p style="color: #999; font-size: 15px; margin: 0; line-height: 1.5;">Add some amazing electronics to your cart to get started shopping</p>
                         </div>
-                        <a href="shop.html" style="background: linear-gradient(135deg, #6B46C1, #F59E0B); color: white; padding: 14px 40px; border-radius: 25px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-size: 16px; font-weight: 600; margin-top: 15px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(107, 70, 193, 0.3);">
+                        <a href="shop.html" style="background: linear-gradient(135deg, #088178, #FFB74D); color: white; padding: 14px 40px; border-radius: 25px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-size: 16px; font-weight: 600; margin-top: 15px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(8, 129, 120, 0.3);">
                             <i class="fa-solid fa-shopping-bag"></i>Continue Shopping
                         </a>
                     </div>

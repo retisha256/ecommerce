@@ -1,36 +1,20 @@
 #novuna-chatbot-container {
     position: fixed;
     bottom: 95px;
-    /* Above WhatsApp */
     right: 25px;
     z-index: 9999;
     font-family: 'Spartan', sans-serif;
 }
 
-@media (max-width: 768px) {
-    #novuna-chatbot-container {
-        bottom: 85px;
-        /* Adjust for mobile WhatsApp icon size */
-        right: 20px;
-    }
-
-    #novuna-chatbot-window {
-        width: 300px;
-        height: 400px;
-        right: 0;
-        bottom: 70px;
-    }
-}
-
-/* Chatbot Floating Button */
+/* Chatbot Floating Button - Teal with Gold accent */
 #novuna-chatbot-toggle {
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #6B46C1, #8B5CF6);
+    background: linear-gradient(135deg, #088178, #06655e); /* Teal gradient */
     color: #fff;
-    border: 2px solid #F59E0B;
-    box-shadow: 0 8px 25px rgba(107, 70, 193, 0.4);
+    border: 2px solid #FFB74D; /* Gold border */
+    box-shadow: 0 8px 25px rgba(8, 129, 120, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -41,8 +25,9 @@
 
 #novuna-chatbot-toggle:hover {
     transform: scale(1.1);
-    box-shadow: 0 12px 35px rgba(107, 70, 193, 0.6);
-    background: linear-gradient(135deg, #F59E0B, #6B46C1);
+    box-shadow: 0 12px 35px rgba(255, 183, 77, 0.5);
+    background: #FF6B6B; /* Coral on hover */
+    border-color: #088178;
 }
 
 /* Chatbot Window */
@@ -51,35 +36,30 @@
     bottom: 80px;
     right: 0;
     width: 350px;
-    height: 450px;
-    background: #1e1e1e;
+    height: 480px;
+    background: #ffffff;
     border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
     display: none;
     flex-direction: column;
     overflow: hidden;
-    border: 1px solid rgba(245, 158, 11, 0.3);
+    border: 1px solid rgba(8, 129, 120, 0.1);
     transition: all 0.3s ease-in-out;
-    opacity: 0;
-    transform: translateY(20px);
 }
 
 #novuna-chatbot-window.active {
     display: flex;
-    opacity: 1;
-    transform: translateY(0);
 }
 
-/* Chatbot Header */
+/* Chatbot Header - Teal Gradient */
 #novuna-chatbot-header {
-    background: linear-gradient(135deg, #6B46C1, #8B5CF6);
+    background: linear-gradient(135deg, #088178, #06655e); /* Teal gradient */
     color: #fff;
-    padding: 15px 20px;
+    padding: 18px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-weight: 600;
-    border-bottom: 2px solid #F59E0B;
+    font-weight: 700;
 }
 
 #novuna-chatbot-header .title {
@@ -93,10 +73,11 @@
     cursor: pointer;
     font-size: 20px;
     transition: color 0.3s;
+    color: #fff;
 }
 
 #novuna-chatbot-header .close-btn:hover {
-    color: #F59E0B;
+    color: #FFB74D; /* Gold */
 }
 
 /* Chat Messages Area */
@@ -106,35 +87,35 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    background-color: #f8fafc;
+    gap: 12px;
+    background-color: #f9fafb;
 }
 
 .chatbot-msg {
-    max-width: 80%;
+    max-width: 85%;
     padding: 12px 16px;
-    border-radius: 15px;
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.4;
     word-wrap: break-word;
 }
 
+/* Bot Message Styling - Light teal background */
 .chatbot-msg.bot {
     align-self: flex-start;
-    background: linear-gradient(135deg, #f0e6ff, #fff);
-    color: #2b0b4a;
-    border-left: 4px solid #F59E0B;
-    border-bottom-left-radius: 2px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    background: #e6f3f2; /* Very light teal */
+    color: #1f2937;
+    border-radius: 15px 15px 15px 2px;
+    border-left: 3px solid #088178; /* Teal accent */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
+/* User Message Styling - Coral */
 .chatbot-msg.user {
     align-self: flex-end;
-    background: linear-gradient(135deg, #6B46C1, #8B5CF6);
+    background: #FF6B6B; /* Coral */
     color: #fff;
-    border-right: 4px solid #F59E0B;
-    border-bottom-right-radius: 2px;
-    box-shadow: 0 2px 10px rgba(107, 70, 193, 0.2);
+    border-radius: 15px 15px 2px 15px;
+    border-right: 3px solid #FFB74D; /* Gold accent */
 }
 
 /* Chatbot Input Area */
@@ -142,44 +123,46 @@
     display: flex;
     padding: 15px;
     background: #fff;
-    border-top: 1px solid #eee;
+    border-top: 1px solid #f3f4f6;
     gap: 10px;
 }
 
 #novuna-chatbot-input {
     flex: 1;
-    padding: 10px 15px;
-    border: 1px solid #ccc;
-    border-radius: 20px;
+    padding: 12px 18px;
+    border: 1px solid #e5e7eb;
+    border-radius: 25px;
     font-size: 14px;
     outline: none;
-    transition: border-color 0.3s;
+    transition: all 0.3s;
 }
 
 #novuna-chatbot-input:focus {
-    border-color: #6B46C1;
+    border-color: #088178; /* Teal */
+    box-shadow: 0 0 0 2px rgba(8, 129, 120, 0.1);
 }
 
 #novuna-chatbot-send {
-    background: #F59E0B;
-    color: #fff;
+    background: #FFB74D; /* Gold */
+    color: #111;
     border: none;
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: 0.3s;
 }
 
 #novuna-chatbot-send:hover {
-    background: #6B46C1;
-    transform: scale(1.1);
+    background: #088178; /* Teal */
+    color: white;
+    transform: scale(1.05);
 }
 
-/* Scrollbar styling for chatbot */
+/* Scrollbar styling */
 #novuna-chatbot-messages::-webkit-scrollbar {
     width: 6px;
 }
@@ -189,10 +172,30 @@
 }
 
 #novuna-chatbot-messages::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
+    background: #088178; /* Teal */
     border-radius: 10px;
 }
 
 #novuna-chatbot-messages::-webkit-scrollbar-thumb:hover {
-    background: #8B5CF6;
+    background: #FFB74D; /* Gold */
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    #novuna-chatbot-container {
+        bottom: 85px;
+        right: 15px;
+    }
+    
+    #novuna-chatbot-window {
+        width: 300px;
+        height: 400px;
+        bottom: 75px;
+    }
+    
+    #novuna-chatbot-toggle {
+        width: 55px;
+        height: 55px;
+        font-size: 24px;
+    }
 }

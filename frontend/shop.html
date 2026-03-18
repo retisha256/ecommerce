@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .cart-btn {
-            background: linear-gradient(135deg, #6B46C1, #F59E0B);
+            background: linear-gradient(135deg, #088178, #FFB74D);
             cursor: pointer;
             font-weight: 500;
             transition: all 0.3s ease;
@@ -27,8 +27,8 @@
 
         .cart-btn:hover {
             transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(107, 70, 193, 0.45);
-            background: linear-gradient(135deg, #8B5CF6, #F59E0B);
+            box-shadow: 0 6px 20px rgba(8, 129, 120, 0.45);
+            background: linear-gradient(135deg, #088178, #FFB74D);
         }
 
         .cart-btn i {
@@ -132,7 +132,21 @@
 
 
 
-    <section id="product1" class="section-p1">
+    <section id="product1" class="section-p1" style="
+        position:relative;
+        padding:60px 20px;
+        background:linear-gradient(135deg, #111 0%, #1a2a2a 60%, #0a1a1a 100%);
+        overflow:hidden;
+    ">
+        <h2 style="
+            text-align:center;
+            font-weight:800;
+            letter-spacing:.3px;
+            margin-bottom:28px;
+            background:linear-gradient(90deg, #FFB74D, #FF6B6B);
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+        ">Our Products</h2>
         <!-- Products are loaded dynamically from the API and local storage by script.js -->
         <div class="pro-container">
         </div>
