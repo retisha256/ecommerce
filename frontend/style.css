@@ -278,15 +278,14 @@ body {
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   border-radius: 8px;
   padding: 10px 0;
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
   transition: all 0.3s ease;
   z-index: 1000;
   border: 1px solid #e0e0e0;
 }
 
-.account-dropdown:hover .dropdown-menu,
 .account-dropdown.active .dropdown-menu {
   opacity: 1;
   visibility: visible;
@@ -424,9 +423,9 @@ body {
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   border-radius: 8px;
   padding: 10px 0;
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
   transition: all 0.3s ease;
   z-index: 1000;
   border: 1px solid #e0e0e0;
@@ -2094,6 +2093,7 @@ body {
   font-family: monospace;
   background: linear-gradient(135deg, #088178, #FFB74D);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
