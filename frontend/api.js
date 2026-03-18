@@ -13,6 +13,8 @@ const getBaseUrl = () => {
 };
 
 const API_BASE_URL = getBaseUrl();
+// Expose API_BASE_URL globally so other scripts can access it
+window.API_BASE_URL = API_BASE_URL;
 console.log('API Base URL:', API_BASE_URL); // For debugging
 
 class ApiService {
