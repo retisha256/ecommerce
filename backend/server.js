@@ -68,17 +68,39 @@ if (typeof MONGODB_URI === 'string') {
     MONGODB_URI = MONGODB_URI.trim().replace(/^['"]|['"]$/g, '');
 }
 
-mongoose.connect(MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 5000,
-    socketTimeoutMS: 45000,
-})
+const connectWithRetry = () => {
+    mongoose.connect(MONGODB_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        serverSelectionTimeoutMS: 30000,  // 30s — enough for Atlas from Uganda
+        socketTimeoutMS: 60000,
+        connectTimeoutMS: 30000,
+        heartbeatFrequencyMS: 10000,
+        retryWrites: true,
+    })
     .then(() => console.log('MongoDB connected successfully'))
     .catch(err => {
-        console.error('MongoDB connection error:', err);
-        console.log('Make sure MONGODB_URI is set correctly in environment variables');
+        console.error('MongoDB connection error:', err.message);
+        console.log('Retrying MongoDB connection in 10 seconds...');
+        setTimeout(connectWithRetry, 10000); // auto-retry every 10s
     });
+};
+
+connectWithRetry();
+
+// Auto-reconnect if connection drops
+mongoose.connection.on('disconnected', () => {
+    console.log('MongoDB disconnected — attempting reconnect...');
+    setTimeout(connectWithRetry, 5000);
+});
+
+mongoose.connection.on('connected', () => {
+    console.log('MongoDB connection established');
+});
+
+mongoose.connection.on('error', (err) => {
+    console.error('MongoDB runtime error:', err.message);
+});
 
 // Your existing routes — unchanged
 const productRoutes = require('./routes/productRoutes');
