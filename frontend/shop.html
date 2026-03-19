@@ -7,32 +7,354 @@
     <title>Shop - Novuna Electronics</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="product-modal.css">
     <style>
+        /* ── Base cart button ── */
         .cart-btn {
             background: linear-gradient(135deg, #088178, #FFB74D);
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
             transition: all 0.3s ease;
             border: none;
             color: white;
-            padding: 8px 6px;
+            padding: 10px 16px;
             border-radius: 25px;
-            font-size: 14px;
+            font-size: 13px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             white-space: nowrap;
-            box-shadow: 0 4px 15px rgba(107, 70, 193, 0.3);
+            box-shadow: 0 4px 15px rgba(8,129,120,0.25);
+            font-family: 'Spartan', sans-serif;
+            gap: 7px;
+        }
+        .cart-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(8,129,120,0.4); }
+
+        /* ══════════════════════════════════════
+           SEARCH RESULTS — full section takeover
+           ══════════════════════════════════════ */
+        #product1.search-active { padding: 0 !important; background: #0d1a19 !important; }
+        #product1.search-active #products-heading { display: none; }
+        #product1.search-active .pro-container { display: block !important; padding: 0; }
+
+        /* ── Search banner ── */
+        .search-banner {
+            background: linear-gradient(135deg, #088178 0%, #06655e 50%, #0a1a18 100%);
+            padding: 24px 40px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 14px; border-bottom: 3px solid #FFB74D;
+        }
+        .search-banner-left { display: flex; flex-direction: column; gap: 3px; }
+        .search-banner-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.5); }
+        .search-banner-query { font-size: 24px; font-weight: 800; color: #FFB74D; display: flex; align-items: center; gap: 10px; font-family: 'Spartan', sans-serif; }
+        .search-banner-query i { font-size: 18px; color: rgba(255,255,255,0.4); }
+        .search-banner-count { font-size: 13px; color: rgba(255,255,255,0.55); font-weight: 500; }
+        .search-banner-back {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(255,255,255,0.1); color: #fff; text-decoration: none;
+            padding: 11px 22px; border-radius: 30px; font-size: 13px; font-weight: 600;
+            transition: all 0.2s ease; border: 1px solid rgba(255,255,255,0.18);
+            white-space: nowrap; font-family: 'Spartan', sans-serif;
+        }
+        .search-banner-back:hover { background: rgba(255,255,255,0.2); transform: translateX(-3px); }
+
+        /* ── Search results layout ── */
+        .search-results-body { display: flex; gap: 0; min-height: 500px; }
+
+        /* ── Main product panel ── */
+        .search-main-panel {
+            flex: 0 0 380px;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            border-right: 3px solid #FFB74D;
+            position: sticky;
+            top: 70px;
+            max-height: calc(100vh - 70px);
+            overflow-y: auto;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.18);
         }
 
-        .cart-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(8, 129, 120, 0.45);
-            background: linear-gradient(135deg, #088178, #FFB74D);
+        /* Image area with zoom overlay */
+        .main-product-img-wrap {
+            position: relative;
+            overflow: hidden;
+            background: #f0f4f3;
+            flex-shrink: 0;
         }
 
-        .cart-btn i {
-            margin-right: 8px;
+        .main-product-img {
+            width: 100%;
+            height: 280px;
+            object-fit: contain;
+            display: block;
+            padding: 16px;
+            transition: transform 0.4s ease;
+        }
+
+        .main-product-img-wrap:hover .main-product-img { transform: scale(1.06); }
+
+        /* View Details hint */
+        .main-product-img-wrap::after {
+            content: 'Click for full details';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: linear-gradient(to top, rgba(8,129,120,0.85), transparent);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 18px 16px 10px;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            pointer-events: none;
+            text-align: center;
+        }
+
+        .main-product-img-wrap:hover::after { opacity: 1; }
+
+        /* Divider line between image and info */
+        .main-panel-divider {
+            height: 3px;
+            background: linear-gradient(90deg, #088178, #FFB74D, #FF6B6B);
+            flex-shrink: 0;
+        }
+
+        .main-product-body {
+            padding: 20px 22px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Top row: category + badge */
+        .main-product-top-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .main-product-category {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #e6f3f2;
+            color: #088178;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .main-product-badge {
+            background: linear-gradient(135deg, #FF6B6B, #ff4d4d);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .main-product-name {
+            font-size: 19px;
+            font-weight: 800;
+            color: #111;
+            line-height: 1.3;
+            margin: 0;
+        }
+
+        /* Stars row */
+        .main-product-stars-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .main-product-stars { display: flex; gap: 2px; }
+        .main-product-stars i { font-size: 13px; color: #FFB74D; }
+
+        .main-product-rating-text {
+            font-size: 11px;
+            color: #888;
+            font-weight: 500;
+        }
+
+        /* Price box */
+        .main-product-price-box {
+            background: linear-gradient(135deg, #f0f9f8, #e6f3f2);
+            border-left: 4px solid #088178;
+            border-radius: 0 10px 10px 0;
+            padding: 12px 16px;
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+
+        .main-product-price {
+            font-size: 24px;
+            font-weight: 800;
+            color: #088178;
+            font-family: 'Spartan', sans-serif;
+        }
+
+        .main-product-price-note {
+            font-size: 11px;
+            color: #aaa;
+            font-weight: 500;
+        }
+
+        /* Quick highlights */
+        .main-product-highlights {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 12px 14px;
+            background: #fafbfa;
+            border-radius: 10px;
+            border: 1px solid #eef0ee;
+        }
+
+        .main-highlight-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #444;
+            font-weight: 500;
+        }
+
+        .main-highlight-row i {
+            font-size: 13px;
+            color: #088178;
+            width: 14px;
+            flex-shrink: 0;
+        }
+
+        .main-product-desc {
+            font-size: 12.5px;
+            color: #666;
+            line-height: 1.65;
+            margin: 0;
+            border-left: 2px solid #e5ebe9;
+            padding-left: 12px;
+        }
+
+        /* Actions */
+        .main-product-actions {
+            display: flex;
+            gap: 10px;
+            padding: 0 0 4px;
+            flex-wrap: wrap;
+        }
+
+        .main-product-actions .cart-btn {
+            flex: 1;
+            padding: 13px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 12px;
+            justify-content: center;
+            letter-spacing: 0.3px;
+        }
+
+        .main-product-actions .fav-btn {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            background: #fff;
+            color: #ccc;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .main-product-actions .fav-btn:hover,
+        .main-product-actions .fav-btn.favorited { color: #FF6B6B; border-color: #FF6B6B; background: #fff5f5; }
+
+        /* Delivery strip at bottom of panel */
+        .main-product-delivery {
+            display: flex;
+            gap: 0;
+            border-top: 1px solid #eef0ee;
+            margin-top: auto;
+            flex-shrink: 0;
+        }
+
+        .main-delivery-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 12px 8px;
+            font-size: 10px;
+            color: #888;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            border-right: 1px solid #eef0ee;
+        }
+
+        .main-delivery-item:last-child { border-right: none; }
+        .main-delivery-item i { font-size: 16px; color: #088178; }
+
+        /* ── Suggestions panel ── */
+        .search-suggestions-panel { flex: 1; padding: 24px 28px; overflow-y: auto; background: #0d1a19; }
+        .suggestions-heading {
+            font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.45); margin-bottom: 18px; display: flex; align-items: center; gap: 10px;
+        }
+        .suggestions-heading::after { content: ''; flex: 1; height: 1px; background: rgba(255,183,77,0.25); }
+        .suggestions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 16px; }
+        .suggestion-card {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.25s ease; display: flex; flex-direction: column;
+        }
+        .suggestion-card:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,183,77,0.4); transform: translateY(-5px); box-shadow: 0 12px 30px rgba(0,0,0,0.4); }
+        .suggestion-card img { width: 100%; height: 130px; object-fit: cover; display: block; }
+        .suggestion-card-body { padding: 12px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+        .suggestion-card-name { font-size: 13px; font-weight: 700; color: #fff; line-height: 1.3; }
+        .suggestion-card-cat { display: inline-block; background: rgba(8,129,120,0.35); color: #7dd8d3; font-size: 10px; font-weight: 700; padding: 2px 9px; border-radius: 20px; text-transform: uppercase; width: fit-content; }
+        .suggestion-card-price { font-size: 14px; font-weight: 800; color: #FFB74D; margin-top: auto; }
+        .suggestion-card .s-cart-btn { margin: 0 12px 12px; width: calc(100% - 24px); padding: 9px; border-radius: 10px; font-size: 12px; justify-content: center; }
+
+        /* ── No results ── */
+        .no-results-wrap { padding: 80px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+        .no-results-icon { width: 90px; height: 90px; background: rgba(255,183,77,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; color: #FFB74D; }
+        .no-results-wrap h3 { color: #FFB74D; font-size: 22px; font-weight: 800; }
+        .no-results-wrap p { color: rgba(255,255,255,0.45); font-size: 14px; max-width: 320px; line-height: 1.6; }
+
+        /* ── Responsive ── */
+        @media (max-width: 900px) {
+            .search-results-body { flex-direction: column; }
+            .search-main-panel { flex: none; width: 100%; position: static; max-height: none; border-right: none; border-bottom: 3px solid #FFB74D; }
+            .main-product-img { height: 220px; }
+            .search-banner { padding: 18px 20px; }
+            .search-banner-query { font-size: 20px; }
+            .suggestions-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+        }
+        @media (max-width: 600px) {
+            .search-banner { padding: 14px 16px; }
+            .search-banner-query { font-size: 16px; }
+            .search-banner-back { padding: 9px 14px; font-size: 12px; }
+            .main-product-img { height: 200px; }
+            .main-product-name { font-size: 17px; }
+            .main-product-price { font-size: 22px; }
+            .search-suggestions-panel { padding: 18px 14px; }
+            .suggestions-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .suggestion-card img { height: 110px; }
         }
     </style>
 </head>
@@ -42,79 +364,46 @@
         <a href="index.html"><img src="img4.png" class="logo" alt="Novuna Electronics"></a>
         <div>
           <ul id="navbar">
-  <!-- Mobile menu close button at the top -->
   <li id="close-li" class="show-mobile">
     <a href="#" id="close"><i class="fa fa-times" aria-hidden="true"></i> Close Menu</a>
   </li>
-
-  <!-- Search Bar (desktop) -->
   <li id="search-container" class="hide-mobile">
     <div class="search-box">
       <input type="text" id="search-input" placeholder="Search products...">
       <button id="search-btn"><i class="fas fa-search"></i></button>
     </div>
   </li>
-
-  <!-- Mobile search link -->
   <li class="show-mobile">
     <a href="#" id="mobile-search-link"><i class="fas fa-search"></i> Search</a>
   </li>
-
-  <!-- Navigation links -->
   <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
   <li><a href="shop.html" class="active"><i class="fas fa-store"></i> Shop</a></li>
-
-  <!-- Account Dropdown (desktop) -->
   <li class="account-dropdown hide-mobile">
     <a href="#" id="account-toggle">
       <i class="fas fa-user"></i> Account
       <i class="fas fa-chevron-down dropdown-arrow"></i>
     </a>
     <div class="dropdown-menu" id="account-menu">
-      <a href="login.html" class="dropdown-item">
-        <i class="fas fa-sign-in-alt"></i> Sign In
-      </a>
-      <a href="login.html" class="dropdown-item">
-        <i class="fas fa-user-plus"></i> Create Account
-      </a>
-      <a href="#" class="dropdown-item" id="account-logout" style="display: none;">
-        <i class="fas fa-sign-out-alt"></i> Logout
-      </a>
+      <a href="login.html" class="dropdown-item"><i class="fas fa-sign-in-alt"></i> Sign In</a>
+      <a href="login.html" class="dropdown-item"><i class="fas fa-user-plus"></i> Create Account</a>
+      <a href="#" class="dropdown-item" id="account-logout" style="display: none;"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
   </li>
-
-  <!-- Mobile Account links -->
-  <li class="show-mobile">
-    <a href="login.html"><i class="fas fa-sign-in-alt"></i> Sign In</a>
-  </li>
-  <li class="show-mobile">
-    <a href="login.html"><i class="fas fa-user-plus"></i> Create Account</a>
-  </li>
-
-  <!-- Cart (desktop) -->
+  <li class="show-mobile"><a href="login.html"><i class="fas fa-sign-in-alt"></i> Sign In</a></li>
+  <li class="show-mobile"><a href="login.html"><i class="fas fa-user-plus"></i> Create Account</a></li>
   <li class="hide-mobile"><a href="cart.html"><i class="fa-solid fa-cart-shopping"></i> Cart</a></li>
-  
-  <!-- Cart (mobile) -->
   <li class="show-mobile"><a href="cart.html"><i class="fa-solid fa-cart-shopping"></i> View Cart</a></li>
 </ul>
         </div>
         <div id="mobile">
-            <!-- Mobile Search -->
             <a href="#" id="mobile-search"><i class="fas fa-search"></i></a>
-
-            <!-- Mobile Account -->
             <div class="mobile-account-dropdown">
                 <a href="#" id="mobile-account"><i class="fas fa-user"></i></a>
                 <div class="mobile-dropdown-menu" id="mobile-account-menu">
-                    <a href="login.html" class="mobile-dropdown-item">
-                        <i class="fas fa-sign-in-alt"></i> Sign In
-                    </a>
-                    <a href="login.html" class="mobile-dropdown-item">
-                        <i class="fas fa-user-plus"></i> Create Account
-                    </a>
+                    <a href="login.html" class="mobile-dropdown-item"><i class="fas fa-sign-in-alt"></i> Sign In</a>
+                    <a href="login.html" class="mobile-dropdown-item"><i class="fas fa-user-plus"></i> Create Account</a>
                 </div>
             </div>
-
             <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a>
             <i id="bar" class="fas fa-outdent"></i>
         </div>
@@ -129,16 +418,12 @@
         </div>
     </div>
 
-
-
-
     <section id="product1" class="section-p1" style="
         position:relative;
         padding:60px 20px;
         background:linear-gradient(135deg, #111 0%, #1a2a2a 60%, #0a1a1a 100%);
-        overflow:hidden;
     ">
-        <h2 style="
+        <h2 id="products-heading" style="
             text-align:center;
             font-weight:800;
             letter-spacing:.3px;
@@ -148,9 +433,7 @@
             background-clip:text;
             -webkit-text-fill-color:transparent;
         ">Our Products</h2>
-        <!-- Products are loaded dynamically from the API and local storage by script.js -->
-        <div class="pro-container">
-        </div>
+        <div class="pro-container"></div>
     </section>
 
     <section id="newsletter" class="section-p1 section-m1">
@@ -158,7 +441,6 @@
             <h4>Sign Up For Newsletters</h4>
             <p>Get E-mail updates about our latest shop and <span>special offers.</span></p>
         </div>
-
         <div class="form">
             <input type="text" id="newsletter-email" placeholder="Your email address">
             <br><br>
@@ -177,7 +459,6 @@
                     <li><a href="#">Terms & Conditions</a></li>
                 </ul>
             </div>
-
             <div class="footer-col">
                 <h3>ACCOUNT</h3>
                 <ul>
@@ -187,12 +468,11 @@
                     <li><a href="#">Newsletter</a></li>
                 </ul>
             </div>
-
             <div class="footer-col">
                 <h3>CONTACT US</h3>
                 <p><strong>Address:</strong> Kampala, Uganda</p>
                 <p><strong>Phone:</strong> +256 754 030391</p>
-                <p><strong>Email:</strong>customerservice.novuna@gmail.com</p>
+                <p><strong>Email:</strong> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fb988e888f94969e89889e898d92989ed595948d8e959abb9c969a9297d5989496">[email&#160;protected]</a></p>
                 <div class="socials">
                     <a href="#"><i class="fab fa-facebook-f"></i></a>
                     <a href="#"><i class="fab fa-twitter"></i></a>
@@ -200,19 +480,12 @@
                 </div>
             </div>
         </div>
-
         <p class="footer-bottom">© 2026 Novuna electronics. All rights reserved. Designed by 🦋Tisha💙</p>
     </footer>
 
-    <script src="api.js"></script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="api.js"></script>
     <script src="cart.js"></script>
     <script src="auth.js"></script>
     <script src="script.js"></script>
-    <script src="chatbot.js"></script>
-    <!-- Floating WhatsApp -->
-    <a href="https://wa.me/256754030391" class="whatsapp-float" target="_blank" aria-label="Chat on WhatsApp">
-        <i class="fab fa-whatsapp"></i>
-    </a>
+    <script src="product-modal.js"></script>
 </body>
-
-</html>

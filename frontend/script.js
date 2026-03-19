@@ -295,11 +295,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 			);
 
 			if (filtered.length === 0) {
+				injectSearchBanner(decodedQuery, 0);
 				container.innerHTML = `
-					<div style="grid-column: 1/-1; text-align: center; padding: 40px;">
-						<h3 style="color: #f59e0b;">Product Not Found</h3>
-						<p style="color: #999;">No products match "<strong>${decodedQuery}</strong>"</p>
-						<a href="shop.html" class="normal" style="display: inline-block; margin-top: 20px;">View All Products</a>
+					<div class="no-results-wrap">
+						<div class="no-results-icon"><i class="fas fa-search"></i></div>
+						<h3>No results for "${decodedQuery}"</h3>
+						<p>Try a different keyword or browse all our products</p>
+						<a href="shop.html" class="normal">View All Products</a>
 					</div>
 				`;
 				return;
@@ -370,86 +372,238 @@ document.addEventListener('DOMContentLoaded', async () => {
 			});
 		}
 
-		// Render a focused search result with suggestions
+		// Inject search banner + activate search mode on section
+		function injectSearchBanner(query, count) {
+			const section = document.getElementById('product1');
+			if (!section) return;
+			section.classList.add('search-active');
+			const existing = document.getElementById('search-results-banner');
+			if (existing) existing.remove();
+			const banner = document.createElement('div');
+			banner.id = 'search-results-banner';
+			banner.className = 'search-banner';
+			banner.innerHTML = `
+				<div class="search-banner-left">
+					<span class="search-banner-label">Search Results</span>
+					<div class="search-banner-query">
+						<i class="fas fa-search"></i> ${query}
+					</div>
+					<span class="search-banner-count">${count > 0 ? count + ' product' + (count !== 1 ? 's' : '') + ' found' : 'No products found'}</span>
+				</div>
+				<a href="shop.html" class="search-banner-back">
+					<i class="fas fa-arrow-left"></i> All Products
+				</a>
+			`;
+			section.insertBefore(banner, section.firstChild);
+		}
+
+		// Render beautiful search results with suggestions panel
 		function renderSearchResults(products, decodedQuery) {
 			if (!Array.isArray(products) || products.length === 0) return;
-			const main = products[0];
-			// Build suggestions: other matches first, then same-category items from merged
-			const others = products.slice(1);
-			const sameCategory = (merged || []).filter(p => p._id !== main._id && p.category === main.category && !others.find(o => o._id === p._id));
-			const suggestions = others.concat(sameCategory).slice(0, 8);
 
+			injectSearchBanner(decodedQuery, products.length);
+
+			const main = products[0];
+			const others = products.slice(1);
+			const sameCategory = (merged || []).filter(p =>
+				p._id !== main._id &&
+				p.category === main.category &&
+				!others.find(o => o._id === p._id)
+			);
+			const suggestions = others.concat(sameCategory).slice(0, 12);
 			const isFavorited = isProductInWishlist(main.id || main._id);
 
 			container.innerHTML = `
-				<div class="search-results">
-					<div class="search-main">
-						<div class="Pro main-pro" data-id="${main._id}" data-name="${(main.name||'').replace(/"/g,'&quot;')}" data-category="${(main.category||'').replace(/"/g,'&quot;')}" data-price="${main.price}" data-image="${(main.image||'').replace(/"/g,'&quot;')}">
-							<img src="${main.image}" onerror="this.src='https://placehold.co/450x450/111/FFF?text=IMG'" alt="${(main.name||'Product').replace(/"/g,'&quot;')}">
-							<button class="favorite-btn ${isFavorited ? 'favorited' : ''}" data-id="${main._id}"><i class="${isFavorited ? 'fas' : 'far'} fa-heart"></i></button>
-							<div class="des">
-								<span>${main.name}</span>
-								<h5>${main.category}</h5>
-								<div class="star">
-									<i class="fas fa-star" style="color:#F59E0B;"></i>
-									<i class="fas fa-star" style="color:#F59E0B;"></i>
-									<i class="fas fa-star" style="color:#F59E0B;"></i>
-									<i class="fas fa-star" style="color:#F59E0B;"></i>
-									<i class="fas fa-star" style="color:#F59E0B;"></i>
-								</div>
-								<p style="color:#444; margin-top:8px;">${(main.description||'').slice(0,300)}</p>
-								<h4>${formatUGX(main.price)}</h4>
-							</div>
-							<button class="cart-btn"><i class="fa-solid fa-cart-shopping"></i> Add to cart</button>
+				<div class="search-results-body">
+					<div class="search-main-panel">
+
+						<!-- Image with hover overlay -->
+						<div class="main-product-img-wrap">
+							<img class="main-product-img"
+								src="${main.image}"
+								onerror="this.src='https://placehold.co/400x300/f0f4f3/088178?text=IMG'"
+								alt="${(main.name||'').replace(/"/g,'&quot;')}">
 						</div>
+
+						<!-- Gradient divider -->
+						<div class="main-panel-divider"></div>
+
+						<!-- Product info -->
+						<div class="main-product-body">
+
+							<!-- Category + hot badge -->
+							<div class="main-product-top-row">
+								<span class="main-product-category">
+									<i class="fas fa-tag"></i> ${main.category}
+								</span>
+								<span class="main-product-badge">🔥 Hot Pick</span>
+							</div>
+
+							<!-- Name -->
+							<h2 class="main-product-name">${main.name}</h2>
+
+							<!-- Stars -->
+							<div class="main-product-stars-row">
+								<div class="main-product-stars">
+									<i class="fas fa-star"></i><i class="fas fa-star"></i>
+									<i class="fas fa-star"></i><i class="fas fa-star"></i>
+									<i class="fas fa-star"></i>
+								</div>
+								<span class="main-product-rating-text">5.0 · Verified Purchase</span>
+							</div>
+
+							<!-- Price box -->
+							<div class="main-product-price-box">
+								<span class="main-product-price">${formatUGX(main.price)}</span>
+								<span class="main-product-price-note">incl. taxes</span>
+							</div>
+
+							<!-- Quick highlights -->
+							<div class="main-product-highlights">
+								<div class="main-highlight-row"><i class="fas fa-check-circle"></i>Genuine product — quality guaranteed</div>
+								<div class="main-highlight-row"><i class="fas fa-shield-alt"></i>Warranty included on all electronics</div>
+								<div class="main-highlight-row"><i class="fas fa-truck"></i>Free delivery in Kampala</div>
+							</div>
+
+							<!-- Description -->
+							${main.description ? '<p class="main-product-desc">' + main.description.slice(0,200) + '</p>' : ''}
+
+							<!-- Action buttons -->
+							<div class="main-product-actions"
+								data-id="${main._id}"
+								data-name="${(main.name||'').replace(/"/g,'&quot;')}"
+								data-category="${(main.category||'').replace(/"/g,'&quot;')}"
+								data-price="${main.price}"
+								data-image="${(main.image||'').replace(/"/g,'&quot;')}">
+								<button class="cart-btn main-cart-btn">
+									<i class="fa-solid fa-cart-shopping"></i> Add to Cart
+								</button>
+								<button class="fav-btn ${isFavorited ? 'favorited' : ''}" data-id="${main._id}">
+									<i class="${isFavorited ? 'fas' : 'far'} fa-heart"></i>
+								</button>
+							</div>
+
+						</div>
+
+						<!-- Bottom delivery strip -->
+						<div class="main-product-delivery">
+							<div class="main-delivery-item">
+								<i class="fas fa-map-marker-alt"></i> Kampala
+							</div>
+							<div class="main-delivery-item">
+								<i class="fas fa-undo"></i> Returns
+							</div>
+							<div class="main-delivery-item">
+								<i class="fas fa-lock"></i> Secure
+							</div>
+						</div>
+
 					</div>
-					<aside class="search-suggestions">
-						<h3>Similar items</h3>
-						<div class="suggestion-grid">
+					${suggestions.length > 0 ? `
+					<div class="search-suggestions-panel">
+						<div class="suggestions-heading">Similar Items (${suggestions.length})</div>
+						<div class="suggestions-grid">
 							${suggestions.map(s => `
-								<div class="suggestion-item" data-id="${s._id}" data-name="${(s.name||'').replace(/"/g,'&quot;')}" data-price="${s.price}" data-image="${(s.image||'').replace(/"/g,'&quot;')}" data-category="${(s.category||'').replace(/"/g,'&quot;')}" data-description="${(s.description||'').replace(/"/g,'&quot;')}">
-									<img src="${s.image}" onerror="this.src='https://placehold.co/100x100/111/FFF?text=IMG'" alt="${(s.name||'').replace(/"/g,'&quot;')}">
-									<div class="s-info">
-										<strong>${s.name}</strong>
-										<div class="s-cat">${s.category}</div>
-										<div class="s-price">${formatUGX(s.price)}</div>
+								<div class="suggestion-card"
+									data-id="${s._id}"
+									data-name="${(s.name||'').replace(/"/g,'&quot;')}"
+									data-price="${s.price}"
+									data-image="${(s.image||'').replace(/"/g,'&quot;')}"
+									data-category="${(s.category||'').replace(/"/g,'&quot;')}">
+									<img src="${s.image}" onerror="this.src='https://placehold.co/200x160/111/FFF?text=IMG'" alt="${(s.name||'').replace(/"/g,'&quot;')}">
+									<div class="suggestion-card-body">
+										<div class="suggestion-card-name">${s.name}</div>
+										<div class="suggestion-card-cat">${s.category}</div>
+										<div class="suggestion-card-price">${formatUGX(s.price)}</div>
 									</div>
-									<button class="cart-btn s-add" aria-label="Add ${s.name} to cart"><i class="fa-solid fa-cart-shopping"></i></button>
+									<button class="cart-btn s-cart-btn" data-sid="${s._id}">
+										<i class="fa-solid fa-cart-shopping"></i> Add
+									</button>
 								</div>
 							`).join('')}
 						</div>
-					</aside>
+					</div>` : ''}
 				</div>
 			`;
 
-		// Reset delegation flags to allow fresh listeners on new searches
-		container._cartDelegationAttached = false;
-		container._favoriteDelegationAttached = false;
+			// Click main product image or body → open modal
+			const mainPanel = container.querySelector('.search-main-panel');
+			if (mainPanel) {
+				mainPanel.addEventListener('click', (e) => {
+					if (e.target.closest('.main-cart-btn') || e.target.closest('.fav-btn') || e.target.closest('.main-product-delivery')) return;
+					if (typeof openProductModal === 'function') {
+						openProductModal({
+							id: main._id,
+							name: main.name,
+							category: main.category,
+							price: main.price,
+							image: main.image,
+							description: main.description || ''
+						});
+					}
+				});
+			}
 
-			attachFavoriteListeners();
-			
-			// Add click handler for suggestion items to view their details
-			container.addEventListener('click', function (e) {
-				const suggestionItem = e.target.closest && e.target.closest('.suggestion-item');
-				if (!suggestionItem) return;
-				// Don't navigate if the cart button was clicked
-				if (e.target.closest('.cart-btn')) return;
-				e.preventDefault();
-				
-				// Find the suggestion product in merged array
-				const suggestionId = suggestionItem.getAttribute('data-id');
-				const suggestionProduct = (merged || []).find(p => p._id === suggestionId);
-				if (suggestionProduct) {
-					// Re-render with this product as the main one
-					const filtered = (merged || []).filter(p =>
-						String(p.name || '').toLowerCase().includes(decodedQuery) ||
-						String(p.category || '').toLowerCase().includes(decodedQuery) ||
-						String(p.description || '').toLowerCase().includes(decodedQuery)
-					);
-					renderSearchResults(filtered, decodedQuery);
-				}
+			// Cart: main product
+			const mainCartBtn = container.querySelector('.main-cart-btn');
+			if (mainCartBtn) {
+				mainCartBtn.addEventListener('click', (e) => {
+					e.stopPropagation();
+					const a = container.querySelector('.main-product-actions');
+					if (typeof addToCart === 'function') addToCart({
+						id: a.dataset.id, name: a.dataset.name, category: a.dataset.category,
+						price: parseFloat(a.dataset.price), image: a.dataset.image
+					});
+				});
+			}
+
+			// Favorite: main product
+			const favBtn = container.querySelector('.fav-btn');
+			if (favBtn) {
+				favBtn.addEventListener('click', (e) => {
+					e.stopPropagation();
+					const pid = favBtn.dataset.id;
+					const isNow = toggleWishlist(pid, { id: pid, name: main.name, category: main.category, price: main.price, image: main.image });
+					favBtn.classList.toggle('favorited', isNow);
+					favBtn.querySelector('i').className = isNow ? 'fas fa-heart' : 'far fa-heart';
+				});
+			}
+
+			// Cart: suggestion cards
+			container.querySelectorAll('.s-cart-btn').forEach(btn => {
+				btn.addEventListener('click', (e) => {
+					e.stopPropagation();
+					const sid = btn.dataset.sid;
+					const sp = (merged || []).find(p => p._id === sid);
+					if (sp && typeof addToCart === 'function') addToCart({ id: sp._id, name: sp.name, category: sp.category, price: sp.price, image: sp.image });
+				});
 			});
-			
+
+			// Click suggestion card → swap to main panel AND open modal
+			container.querySelectorAll('.suggestion-card').forEach(card => {
+				card.addEventListener('click', (e) => {
+					if (e.target.closest('.s-cart-btn')) return;
+					const sid = card.dataset.id;
+					const sp = (merged || []).find(p => p._id === sid);
+					if (!sp) return;
+					// 1. Swap to main panel
+					const rest = products.filter(p => p._id !== sid);
+					renderSearchResults([sp, ...rest], decodedQuery);
+					window.scrollTo({ top: 0, behavior: 'smooth' });
+					// 2. Open modal on top
+					if (typeof openProductModal === 'function') {
+						openProductModal({
+							id: sp._id,
+							name: sp.name,
+							category: sp.category,
+							price: sp.price,
+							image: sp.image,
+							description: sp.description || ''
+						});
+					}
+				});
+			});
+
 			if (typeof updateCartIcon === 'function') updateCartIcon();
 		}
 
@@ -824,3 +978,191 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
+
+/* ═══════════════════════════════════════════
+   NOVUNA PRODUCT DETAIL MODAL
+   ═══════════════════════════════════════════ */
+(function () {
+    function buildModal() {
+        if (document.getElementById('product-modal-overlay')) return;
+        if (!document.querySelector('link[href*="product-modal.css"]')) {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'product-modal.css';
+            document.head.appendChild(link);
+        }
+        const overlay = document.createElement('div');
+        overlay.id = 'product-modal-overlay';
+        overlay.innerHTML = `
+            <div id="product-modal" role="dialog" aria-modal="true" aria-labelledby="modal-product-name">
+                <button id="modal-close-btn" aria-label="Close"><i class="fas fa-times"></i></button>
+                <div class="modal-body">
+                    <div class="modal-image-panel">
+                        <div class="modal-main-image-wrap">
+                            <span class="modal-img-badge" id="modal-img-badge"></span>
+                            <img id="modal-main-image" src="" alt="">
+                        </div>
+                    </div>
+                    <div class="modal-info-panel">
+                        <span class="modal-category" id="modal-category"><i class="fas fa-tag"></i> <span id="modal-category-text"></span></span>
+                        <h2 class="modal-name" id="modal-product-name"></h2>
+                        <div class="modal-stars">
+                            <div class="stars">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="review-count">(Verified Purchase)</span>
+                        </div>
+                        <div class="modal-price-wrap">
+                            <span class="modal-price" id="modal-price"></span>
+                            <span class="modal-price-label">Incl. all taxes</span>
+                        </div>
+                        <div class="modal-divider"></div>
+                        <div class="modal-highlights">
+                            <div class="modal-highlights-title">Product Highlights</div>
+                            <div class="modal-highlight-row"><i class="fas fa-check-circle"></i><span>Genuine product — quality guaranteed</span></div>
+                            <div class="modal-highlight-row"><i class="fas fa-shield-alt"></i><span>Warranty included on all electronics</span></div>
+                            <div class="modal-highlight-row"><i class="fas fa-truck"></i><span>Free delivery on orders in Kampala</span></div>
+                            <div class="modal-highlight-row" id="modal-desc-highlight" style="display:none;"><i class="fas fa-info-circle"></i><span id="modal-desc-text"></span></div>
+                        </div>
+                        <div class="modal-divider"></div>
+                        <div class="modal-qty-wrap">
+                            <span class="modal-qty-label">Quantity:</span>
+                            <div class="modal-qty-controls">
+                                <button class="qty-btn" id="qty-minus">−</button>
+                                <input type="number" id="modal-qty-display" value="1" min="1" max="99" readonly>
+                                <button class="qty-btn" id="qty-plus">+</button>
+                            </div>
+                        </div>
+                        <div class="modal-actions">
+                            <button class="modal-add-cart-btn" id="modal-add-cart-btn">
+                                <i class="fa-solid fa-cart-shopping"></i> Add to Cart
+                            </button>
+                            <button class="modal-wishlist-btn" id="modal-wishlist-btn" title="Add to Wishlist">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                        <div class="modal-delivery-strip">
+                            <div class="delivery-item"><i class="fas fa-map-marker-alt"></i> Delivery to Kampala</div>
+                            <div class="delivery-item"><i class="fas fa-phone"></i> +256 754 030391</div>
+                            <div class="delivery-item"><i class="fas fa-undo"></i> Easy Returns</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+        let qty = 1;
+        document.getElementById('qty-minus').addEventListener('click', () => {
+            if (qty > 1) { qty--; document.getElementById('modal-qty-display').value = qty; }
+        });
+        document.getElementById('qty-plus').addEventListener('click', () => {
+            if (qty < 99) { qty++; document.getElementById('modal-qty-display').value = qty; }
+        });
+
+        document.getElementById('modal-add-cart-btn').addEventListener('click', () => {
+            const btn = document.getElementById('modal-add-cart-btn');
+            const product = window._modalCurrentProduct;
+            if (!product || typeof addToCart !== 'function') return;
+            const finalQty = parseInt(document.getElementById('modal-qty-display').value) || 1;
+            for (let i = 0; i < finalQty; i++) addToCart(product);
+            btn.classList.add('added');
+            btn.innerHTML = '<i class="fas fa-check"></i> Added to Cart!';
+            setTimeout(() => {
+                btn.classList.remove('added');
+                btn.innerHTML = '<i class="fa-solid fa-cart-shopping"></i> Add to Cart';
+            }, 2000);
+        });
+
+        document.getElementById('modal-wishlist-btn').addEventListener('click', () => {
+            const btn = document.getElementById('modal-wishlist-btn');
+            const product = window._modalCurrentProduct;
+            if (!product) return;
+            const isNow = toggleWishlist(product.id, product);
+            btn.classList.toggle('active', isNow);
+            btn.querySelector('i').className = isNow ? 'fas fa-heart' : 'far fa-heart';
+        });
+    }
+
+    function openModal(product) {
+        buildModal();
+        window._modalCurrentProduct = product;
+        const qtyInput = document.getElementById('modal-qty-display');
+        if (qtyInput) qtyInput.value = 1;
+
+        document.getElementById('modal-main-image').src = product.image || '';
+        document.getElementById('modal-main-image').alt = product.name || '';
+        document.getElementById('modal-main-image').onerror = function() {
+            this.src = 'https://placehold.co/400x400/f0f4f3/088178?text=IMG';
+        };
+        document.getElementById('modal-product-name').textContent = product.name || 'Product';
+        document.getElementById('modal-category-text').textContent = product.category || 'General';
+        document.getElementById('modal-img-badge').textContent = product.category || '';
+
+        const price = Number(product.price || 0);
+        document.getElementById('modal-price').textContent =
+            'UGX.' + price.toLocaleString(undefined, { maximumFractionDigits: 0 });
+
+        const descRow = document.getElementById('modal-desc-highlight');
+        const descText = document.getElementById('modal-desc-text');
+        if (product.description && product.description.trim()) {
+            descText.textContent = product.description.slice(0, 200);
+            descRow.style.display = 'flex';
+        } else {
+            descRow.style.display = 'none';
+        }
+
+        const favBtn = document.getElementById('modal-wishlist-btn');
+        const isFav = typeof isProductInWishlist === 'function' && isProductInWishlist(product.id);
+        favBtn.classList.toggle('active', isFav);
+        favBtn.querySelector('i').className = isFav ? 'fas fa-heart' : 'far fa-heart';
+
+        const cartBtn = document.getElementById('modal-add-cart-btn');
+        cartBtn.classList.remove('added');
+        cartBtn.innerHTML = '<i class="fa-solid fa-cart-shopping"></i> Add to Cart';
+
+        document.getElementById('product-modal-overlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        const overlay = document.getElementById('product-modal-overlay');
+        if (overlay) overlay.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    window.openProductModal = openModal;
+
+    // Global click — open modal on any .Pro card click (except buttons)
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('.cart-btn') || e.target.closest('.favorite-btn') ||
+            e.target.closest('.fav-btn') || e.target.closest('.s-cart-btn') ||
+            e.target.closest('.main-cart-btn') || e.target.closest('#product-modal')) return;
+
+        const card = e.target.closest('.Pro');
+        if (!card) return;
+
+        const id       = card.getAttribute('data-id');
+        const name     = card.getAttribute('data-name');
+        const category = card.getAttribute('data-category');
+        const price    = card.getAttribute('data-price');
+        const image    = card.getAttribute('data-image');
+
+        if (!name || !price) return;
+
+        let description = '';
+        if (window._shopMergedProducts) {
+            const found = window._shopMergedProducts.find(p => p._id === id || p.id === id);
+            if (found) description = found.description || '';
+        }
+
+        openModal({ id, name, category, price: Number(price), image, description });
+    }, true);
+
+})();
